@@ -29,7 +29,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       try {
         await navigator.mediaDevices.getUserMedia({ audio: true });
         await conversation.startSession({
-          agentId: "", // Replace with your agent ID
+          agentId: import.meta.env.VITE_AGENT_ID,
         });
         setIsRecording(true);
       } catch (error) {

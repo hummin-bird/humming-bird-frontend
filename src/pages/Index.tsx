@@ -70,8 +70,8 @@ const Index = () => {
         </h1>
 
         {/* Audio Visualization */}
-        <div className="w-full max-w-md aspect-square flex items-center justify-center px-4 sm:px-0">
-          <div className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 rounded-full glass-dark flex items-center justify-center shadow-xl shadow-black/20">
+        <div className="flex items-center justify-center w-full">
+          <div className="relative w-64 h-64">
             <AudioWaveform isRecording={isRecording} />
           </div>
         </div>
