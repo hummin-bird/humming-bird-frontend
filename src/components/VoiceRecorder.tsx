@@ -5,19 +5,18 @@ import { useIsMobile } from "../hooks/use-mobile";
 import { useConversation } from "@11labs/react";
 
 interface VoiceRecorderProps {
-  onTranscriptionUpdate: (text: string) => void;
+  isRecording: boolean;
+  setIsRecording: (isRecording: boolean) => void;
 }
 
 const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
-  onTranscriptionUpdate,
+  isRecording,
+  setIsRecording,
 }) => {
-  const [isRecording, setIsRecording] = useState(false);
-  const isMobile = useIsMobile();
-
   // ElevenLabs conversation setup
   const conversation = useConversation({
-    onConnect: () => console.log("Connected to ElevenLabs"),
-    onDisconnect: () => console.log("Disconnected from ElevenLabs"),
+    onConnect: (event) => console.log("Connected to ElevenLabs", event),
+    onDisconnect: (event) => console.log("Disconnected from ElevenLabs", event),
     onMessage: (message) => console.log("Message from ElevenLabs:", message),
     onError: (error) => console.error("Error with ElevenLabs:", error),
   });
@@ -30,14 +29,14 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       try {
         await navigator.mediaDevices.getUserMedia({ audio: true });
         await conversation.startSession({
-          agentId: process.env.NEXT_PUBLIC_ELEVEN_LABS_AGENT_ID, // Replace with your agent ID
+          agentId: "", // Replace with your agent ID
         });
         setIsRecording(true);
       } catch (error) {
         console.error("Failed to start conversation:", error);
       }
     }
-  }, [conversation, isRecording]);
+  }, [conversation, isRecording, setIsRecording]);
 
   return (
     <div className="flex flex-col items-center gap-4 w-full px-4">
