@@ -67,8 +67,9 @@ export default {
 					primary: '#4299E1',
 					secondary: '#3182CE',
 					accent: '#6B46C1',
-					light: '#F1F0FB',
-					background: '#FFFFFF',
+					light: '#1A1F2C',  // Changed to dark color
+					dark: '#121520',    // Added darker color
+					background: '#0F1219', // Added dark background
 				}
 			},
 			borderRadius: {

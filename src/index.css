@@ -5,6 +5,38 @@
 
 @layer base {
   :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+  }
+
+  .light {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
@@ -32,38 +64,6 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
   }
 }
 
@@ -91,6 +91,7 @@
   justify-content: center;
   gap: 3px;
   height: 60px;
+  width: 100%;
 }
 
 .audio-wave .wave-bar {
@@ -110,6 +111,10 @@
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
+  background-color: #1A1F2C;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 100%;
 }
 
 .message {
@@ -120,13 +125,43 @@
 }
 
 .message.bot {
-  background-color: #F1F0FB;
+  background-color: #252A37;
   border-left: 3px solid #6B46C1;
   align-self: flex-start;
+  color: #E2E8F0;
 }
 
 .message.user {
-  background-color: #E6F7FF;
+  background-color: #2C3851;
   border-right: 3px solid #4299E1;
   align-self: flex-end;
+  color: #E2E8F0;
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 640px) {
+  .audio-wave {
+    height: 50px;
+    gap: 2px;
+  }
+  
+  .audio-wave .wave-bar {
+    width: 4px;
+  }
+  
+  .message {
+    max-width: 90%;
+    padding: 10px 14px;
+  }
+  
+  .conversation-container {
+    max-height: 60vh;
+  }
+}
+
+/* Glass morphism effect for dark mode */
+.glass-dark {
+  background: rgba(26, 31, 44, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }

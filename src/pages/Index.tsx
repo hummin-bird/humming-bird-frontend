@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import AudioWaveform from "../components/AudioWaveform";
 import VoiceRecorder from "../components/VoiceRecorder";
 import ConversationDisplay from "../components/ConversationDisplay";
+import { useIsMobile } from "../hooks/use-mobile";
 
 interface Message {
   id: string;
@@ -14,6 +15,7 @@ interface Message {
 const Index = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [currentTranscription, setCurrentTranscription] = useState('');
+  const isMobile = useIsMobile();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: uuidv4(),
@@ -67,16 +69,16 @@ const Index = () => {
   }, [isRecording]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-between p-4 sm:p-8 bg-gradient-to-b from-hummingbird-light to-white">
-      <div className="w-full max-w-4xl flex flex-col items-center gap-8 py-8">
+    <div className="min-h-screen flex flex-col items-center justify-between p-3 sm:p-6 bg-gradient-to-b from-hummingbird-light to-hummingbird-background">
+      <div className="w-full max-w-4xl flex flex-col items-center gap-6 sm:gap-8 py-6">
         {/* Header */}
-        <h1 className="humming-title text-4xl sm:text-5xl font-bold text-hummingbird-accent">
+        <h1 className="humming-title text-3xl sm:text-4xl md:text-5xl font-bold text-hummingbird-primary">
           HUMMINGBIRD
         </h1>
         
         {/* Audio Visualization */}
-        <div className="w-full max-w-md aspect-square flex items-center justify-center">
-          <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-white shadow-lg flex items-center justify-center">
+        <div className="w-full max-w-md aspect-square flex items-center justify-center px-4 sm:px-0">
+          <div className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 rounded-full glass-dark flex items-center justify-center shadow-xl shadow-black/20">
             <AudioWaveform isRecording={isRecording} />
           </div>
         </div>
@@ -87,7 +89,9 @@ const Index = () => {
         />
         
         {/* Conversation Display */}
-        <ConversationDisplay messages={messages} />
+        <div className="w-full px-3 sm:px-0">
+          <ConversationDisplay messages={messages} />
+        </div>
       </div>
     </div>
   );

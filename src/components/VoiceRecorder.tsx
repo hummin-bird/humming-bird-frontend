@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff } from "lucide-react";
+import { useIsMobile } from "../hooks/use-mobile";
 
 interface VoiceRecorderProps {
   onTranscriptionUpdate: (text: string) => void;
@@ -10,6 +11,7 @@ interface VoiceRecorderProps {
 const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onTranscriptionUpdate }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [transcription, setTranscription] = useState('');
+  const isMobile = useIsMobile();
   
   // References for speech recognition
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -71,7 +73,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onTranscriptionUpdate }) 
   };
   
   return (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col items-center gap-4 w-full px-4">
       {/* Record Button */}
       <div className="relative">
         {isRecording && (
@@ -79,31 +81,31 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onTranscriptionUpdate }) 
         )}
         <Button
           onClick={toggleRecording}
-          className={`h-16 w-16 rounded-full ${
+          className={`h-14 w-14 sm:h-16 sm:w-16 rounded-full ${
             isRecording 
-              ? 'bg-hummingbird-primary hover:bg-hummingbird-secondary' 
-              : 'bg-gray-200 hover:bg-gray-300'
+              ? 'bg-hummingbird-primary hover:bg-hummingbird-secondary shadow-lg shadow-blue-500/30' 
+              : 'bg-gray-700 hover:bg-gray-600 shadow-lg shadow-gray-900/20'
           }`}
           aria-label={isRecording ? 'Stop recording' : 'Start recording'}
         >
           {isRecording ? (
-            <MicOff className="h-8 w-8 text-white" />
+            <MicOff className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
           ) : (
-            <Mic className="h-8 w-8 text-gray-600" />
+            <Mic className="h-6 w-6 sm:h-8 sm:w-8 text-gray-300" />
           )}
         </Button>
       </div>
       
       {/* Current Transcription */}
-      <div className="w-full max-w-lg text-center min-h-20">
+      <div className="w-full max-w-lg text-center min-h-16 px-2">
         {transcription && (
-          <p className="text-gray-700">{transcription}</p>
+          <p className="text-gray-300 text-sm sm:text-base">{transcription}</p>
         )}
         {!transcription && !isRecording && (
-          <p className="text-gray-500 italic">Press the button to start speaking...</p>
+          <p className="text-gray-500 italic text-sm sm:text-base">Press the button to start speaking...</p>
         )}
         {!transcription && isRecording && (
-          <p className="text-gray-500">Listening...</p>
+          <p className="text-gray-400 text-sm sm:text-base">Listening...</p>
         )}
       </div>
     </div>
