@@ -9,7 +9,7 @@ interface LogMessage {
 const connectToWebSocket = (sessionId: string): WebSocket => {
   // Use wss:// for secure connections (https) or ws:// for non-secure (http)
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const host = process.env.NEXT_PUBLIC_API_URL || window.location.host;
+  const host = import.meta.env.VITE_SOCKET_URL || window.location.host;
   const socket = new WebSocket(`${protocol}//${host}/ws/logs/${sessionId}`);
   
   socket.onopen = () => {
