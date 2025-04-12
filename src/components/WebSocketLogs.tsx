@@ -49,14 +49,14 @@ const WebSocketLogs: React.FC<WebSocketLogsProps> = ({
                 </span>
                 <span
                   className={`ml-2 ${
-                    log.level.toLowerCase() === "error"
+                    log.level?.toLowerCase() === "error"
                       ? "text-red-400"
-                      : log.level.toLowerCase() === "warn"
+                      : log.level?.toLowerCase() === "warn"
                       ? "text-yellow-400"
                       : "text-green-400"
                   }`}
                 >
-                  {log.level}
+                  {log.level || "INFO"}
                 </span>
                 <p className="text-white break-words">{log.message}</p>
               </li>
