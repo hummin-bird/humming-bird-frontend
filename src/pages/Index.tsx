@@ -85,7 +85,9 @@ const Index = () => {
           {!isFetching && !showProductList && (
             <div className="flex items-center justify-center w-full">
               <div className="relative w-64 h-64">
-                <AnimationBlob isRecording={isRecording} />
+                <div className="w-full max-w-md h-40 mb-4">
+                  <AudioWaveform isRecording={isRecording} />
+                </div>
               </div>
             </div>
           )}

@@ -112,6 +112,16 @@ void main() {
         sdf = fill(sdf, 0.05, sdfCircle) * 1.4;
     }
     
+    // Default color (white/gray)
     vec3 color = vec3(sdf);
+    
+    // Recording mode colors
+    if (VAR == 1 || VAR == 3) {
+        // Blend between blue and green using the sdf value
+        vec3 blueColor = vec3(0.157, 0.706, 0.960); // #28b4f5
+        vec3 greenColor = vec3(0.012, 1.0, 0.396);  // #03ff65
+        color = mix(blueColor, greenColor, sdf) * sdf;
+    }
+    
     gl_FragColor = vec4(color.rgb, 1.0);
 }
