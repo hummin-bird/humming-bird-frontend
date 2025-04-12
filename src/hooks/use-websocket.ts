@@ -7,8 +7,10 @@ interface LogMessage {
 }
 
 const connectToWebSocket = (sessionId: string): WebSocket => {
-  // Use standard WebSocket protocol
-  const socket = new WebSocket(`ws://humming-bird-backend-production.up.railway.app/ws/logs/${sessionId}`);
+  // Use wss:// for secure connections (https) or ws:// for non-secure (http)
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const host = process.env.NEXT_PUBLIC_API_URL || window.location.host;
+  const socket = new WebSocket(`${protocol}//${host}/ws/logs/${sessionId}`);
   
   socket.onopen = () => {
     console.log('Connected to WebSocket');
@@ -29,6 +31,7 @@ export function useWebSocket(sessionId: string) {
   const [logs, setLogs] = useState<LogMessage[]>([]);
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [isConnected, setIsConnected] = useState(false);
   const MAX_RETRY_ATTEMPTS = 5;
   const RETRY_DELAY = 1000;
 
@@ -54,14 +57,26 @@ export function useWebSocket(sessionId: string) {
         console.error('Error parsing message:', error);
       }
     };
+
+    newSocket.onopen = () => {
+      console.log('WebSocket connected');
+      setIsConnected(true);
+      setRetryCount(0); // Reset retry count on successful connection
+    };
+
+    newSocket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      setIsConnected(false);
+    };
     
     // Handle reconnection
     newSocket.onclose = () => {
+      setIsConnected(false);
       if (retryCount < MAX_RETRY_ATTEMPTS) {
         console.log(`WebSocket closed. Attempting to reconnect (${retryCount + 1}/${MAX_RETRY_ATTEMPTS})...`);
         reconnectTimeout = setTimeout(() => {
-          setRetryCount(retryCount + 1);
-        }, RETRY_DELAY);
+          setRetryCount(prevCount => prevCount + 1);
+        }, RETRY_DELAY * Math.pow(2, retryCount)); // Exponential backoff
       } else {
         console.error('WebSocket connection failed after maximum retry attempts');
       }
@@ -70,10 +85,11 @@ export function useWebSocket(sessionId: string) {
     // Cleanup on unmount
     return () => {
       clearTimeout(reconnectTimeout);
-      newSocket.close();
+      if (newSocket.readyState === WebSocket.OPEN) {
+        newSocket.close();
+      }
     };
   }, [sessionId, retryCount]);
 
-  return { logs, socket };
+  return { logs, socket, isConnected };
 }
-
