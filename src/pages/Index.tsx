@@ -63,13 +63,20 @@ const Index = () => {
           />
 
           {/* Conversation Display */}
-          <div className="w-full px-3 sm:px-0">
-            <ConversationDisplay messages={messages} />
-          </div>
-
-          {isLoading && <p>Loading...</p>}
-          {error && <p>Error: {error.message}</p>}
-          {data && <p>Data fetched successfully!</p>}
+          {isFetching ? (
+            <div>isLoading</div>
+          ) : (
+            <div
+              className={`w-full px-3 sm:px-0  
+                ${
+                  isFetching
+                    ? "animate-out fade-out duration-500"
+                    : "animate-in fade-in duration-1000"
+                } `}
+            >
+              <ConversationDisplay messages={messages} />
+            </div>
+          )}
         </div>
       </div>
       <ReactQueryDevtools />

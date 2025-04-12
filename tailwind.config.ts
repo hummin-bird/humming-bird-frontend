@@ -1,5 +1,6 @@
 
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
 
 export default {
 	darkMode: ["class"],
@@ -130,6 +131,6 @@ export default {
 				'wave-5': 'wave 1.4s linear infinite',
 			}
 		}
-	},
-	plugins: [require("tailwindcss-animate")],
+  },
+  plugins: [animate],
 } satisfies Config;
