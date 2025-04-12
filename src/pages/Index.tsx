@@ -1,45 +1,79 @@
-import React, { useState, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
+import React, { useState, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 import AudioWaveform from "../components/AudioWaveform";
 import VoiceRecorder from "../components/VoiceRecorder";
 import ConversationDisplay from "../components/ConversationDisplay";
-import { useIsMobile } from "../hooks/use-mobile";
 import { useGlobalContext } from "../hooks/useGlobalContext";
-import { GlobalProvider } from "../components/ui/GlobalContextProvider";
-import { Message } from "../types";
+import { PRODUCT_LIST_URL } from "../components/constants";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
+const queryClient = new QueryClient();
 
 const Index = () => {
   const [isRecording, setIsRecording] = useState(false);
-  const { messages, addMessage } = useGlobalContext();
-  console.log("messages :", messages);
+  const { messages, conversationId } = useGlobalContext();
+  console.log("conversationId :", conversationId);
+
+  const fetchProductList = useCallback(async () => {
+    const response = await fetch(`${PRODUCT_LIST_URL}/${conversationId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.json();
+  }, [conversationId]);
+
+  const { data, error, isLoading, refetch, isFetching } = useQuery({
+    queryKey: ["productList"],
+    queryFn: fetchProductList,
+    enabled: false, // Disable automatic fetching
+  });
+
+  const onConversationEnd = useCallback(async () => {
+    try {
+      await refetch();
+    } catch (error) {
+      console.error("Error fetching product list:", error);
+    }
+  }, [refetch]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-between p-3 sm:p-6 bg-gradient-to-b from-hummingbird-light to-hummingbird-background">
-      <div className="w-full max-w-4xl flex flex-col items-center gap-6 sm:gap-8 py-6">
-        {/* Header */}
-        <h1 className="humming-title text-3xl sm:text-4xl md:text-5xl font-bold text-hummingbird-primary">
-          HUMMINGBIRD
-        </h1>
+    <QueryClientProvider client={queryClient}>
+      <div className="min-h-screen flex flex-col items-center justify-between p-3 sm:p-6 bg-gradient-to-b from-hummingbird-light to-hummingbird-background">
+        <div className="w-full max-w-4xl flex flex-col items-center gap-6 sm:gap-8 py-6">
+          {/* Header */}
+          <h1 className="humming-title text-3xl sm:text-4xl md:text-5xl font-bold text-hummingbird-primary">
+            HUMMINGBIRD
+          </h1>
 
-        {/* Audio Visualization */}
-        <div className="flex items-center justify-center w-full">
-          <div className="relative w-64 h-64">
-            <AudioWaveform isRecording={isRecording} />
+          {/* Audio Visualization */}
+          <div className="flex items-center justify-center w-full">
+            <div className="relative w-64 h-64">
+              <AudioWaveform isRecording={isRecording} />
+            </div>
           </div>
-        </div>
 
-        {/* Voice Recorder Component */}
-        <VoiceRecorder
-          isRecording={isRecording}
-          setIsRecording={setIsRecording}
-        />
+          {/* Voice Recorder Component */}
+          <VoiceRecorder
+            isRecording={isRecording}
+            setIsRecording={setIsRecording}
+            onConversationEnd={onConversationEnd}
+          />
 
-        {/* Conversation Display */}
-        <div className="w-full px-3 sm:px-0">
-          <ConversationDisplay messages={messages} />
+          {/* Conversation Display */}
+          <div className="w-full px-3 sm:px-0">
+            <ConversationDisplay messages={messages} />
+          </div>
+
+          {isLoading && <p>Loading...</p>}
+          {error && <p>Error: {error.message}</p>}
+          {data && <p>Data fetched successfully!</p>}
         </div>
       </div>
-    </div>
+      <ReactQueryDevtools />
+    </QueryClientProvider>
   );
 };
 

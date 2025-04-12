@@ -8,13 +8,15 @@ import { v4 as uuidv4 } from "uuid";
 interface VoiceRecorderProps {
   isRecording: boolean;
   setIsRecording: (isRecording: boolean) => void;
+  onConversationEnd: () => void;
 }
 
 const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   isRecording,
   setIsRecording,
+  onConversationEnd,
 }) => {
-  const { addMessage } = useGlobalContext();
+  const { addMessage, setConversationId } = useGlobalContext();
 
   const onMessage = (event) => {
     console.log("event :", event);
@@ -25,12 +27,18 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     });
   };
 
+  const onConnect = (event) => {
+    console.log("Connected to ElevenLabs", event);
+    setConversationId(event.conversationId);
+  };
+
   // ElevenLabs conversation setup
   const conversation = useConversation({
-    onConnect: (event) => console.log("Connected to ElevenLabs", event),
+    onConnect: onConnect,
     onDisconnect: (event) => {
       console.log("Disconnected from ElevenLabs", event);
       setIsRecording(false);
+      onConversationEnd();
     },
     onMessage,
     onError: (error) => {
