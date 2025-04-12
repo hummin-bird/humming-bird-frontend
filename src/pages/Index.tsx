@@ -42,7 +42,7 @@ const Index = () => {
   });
 
   useEffect(() => {
-    if (productListData.products) {
+    if (productListData?.products) {
       setProductList(productListData.products);
       setShowProductList(true);
     }
@@ -81,7 +81,7 @@ const Index = () => {
           {showProductList && <ProductList products={productList} />}
 
           {/* Audio Visualization - hidden during fetching */}
-          {!isFetching && (
+          {!isFetching && !showProductList && (
             <div className="flex items-center justify-center w-full">
               <div className="relative w-64 h-64">
                 <AudioWaveform isRecording={isRecording} />
