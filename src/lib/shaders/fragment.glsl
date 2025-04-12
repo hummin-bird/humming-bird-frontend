@@ -115,13 +115,15 @@ void main() {
     // Default color (white/gray)
     vec3 color = vec3(sdf);
     
-    // Recording mode colors
-    if (VAR == 1 || VAR == 3) {
-        // Blend between blue and green using the sdf value
-        vec3 blueColor = vec3(0.157, 0.706, 0.960); // #28b4f5
-        vec3 greenColor = vec3(0.012, 1.0, 0.396);  // #03ff65
-        color = mix(blueColor, greenColor, sdf) * sdf;
-    }
+    // Apply gradient colors to lines
+    vec3 blueColor = vec3(0.157, 0.706, 0.960); // #28b4f5
+    vec3 greenColor = vec3(0.012, 1.0, 0.396);  // #03ff65
     
-    gl_FragColor = vec4(color.rgb, 1.0);
+    // For VAR=0 (rounded rectangle with stroke)
+    // Apply horizontal gradient along the lines
+    color = mix(blueColor, greenColor, st.x) * sdf;
+    
+    // Set alpha based on sdf value to make background transparent
+    float alpha = sdf;
+    gl_FragColor = vec4(color.rgb, alpha);
 }

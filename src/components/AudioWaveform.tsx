@@ -20,16 +20,13 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ isRecording }) => {
   const lastTimeRef = useRef<number>(0);
 
   // Add automated mouse movement simulation when recording
-  const autoMoveRef = useRef({ active: false, angle: 0 });
+  const autoMoveRef = useRef({ active: true, angle: 0 });
 
-  const [variation, setVariation] = useState(isRecording ? 1 : 0);
+  const [variation, setVariation] = useState(0);
 
   useEffect(() => {
-    // Set variation based on recording state
-    setVariation(isRecording ? 1 : 0);
-
-    // Toggle auto-move based on recording state
-    autoMoveRef.current.active = isRecording;
+    // No longer changing variation based on recording state
+    // We'll just use VAR=0 for both states to maintain the same visual effect
   }, [isRecording]);
 
   useEffect(() => {
@@ -84,7 +81,9 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ isRecording }) => {
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
+      premultipliedAlpha: false,
     });
+    renderer.setClearColor(0x000000, 0); // Set clear color with 0 opacity
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
@@ -122,30 +121,6 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ isRecording }) => {
     // Handle window resize
     window.addEventListener("resize", updateSize);
 
-    // Handle mouse movement
-    const onPointerMove = (e: MouseEvent) => {
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (rect) {
-        mouseRef.current.x = e.clientX - rect.left;
-        mouseRef.current.y = e.clientY - rect.top;
-
-        // Disable auto-movement when user is interacting
-        if (autoMoveRef.current.active) {
-          autoMoveRef.current.active = false;
-
-          // Re-enable auto-movement after 3 seconds of inactivity if still recording
-          if (isRecording) {
-            setTimeout(() => {
-              autoMoveRef.current.active = isRecording;
-            }, 3000);
-          }
-        }
-      }
-    };
-
-    window.addEventListener("mousemove", onPointerMove);
-    window.addEventListener("pointermove", onPointerMove);
-
     // Animation loop
     const animate = () => {
       const currentTime = performance.now() * 0.001;
@@ -153,25 +128,42 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ isRecording }) => {
       lastTimeRef.current = currentTime;
       timeRef.current = currentTime;
 
-      // Automated mouse movement when recording
-      if (autoMoveRef.current.active && containerRef.current) {
+      // Automated mouse movement always active
+      if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
-        const radius = Math.min(rect.width, rect.height) * 0.3;
 
-        // Create a smooth circular or figure-eight pattern
-        autoMoveRef.current.angle += dt * 0.8;
+        // Use different radius based on recording state
+        const baseRadius = Math.min(rect.width, rect.height);
+        const radius = isRecording
+          ? baseRadius * 0.3 // Original radius when recording
+          : baseRadius * 0.15; // Reduced radius when not recording
+
+        // Create a smooth pattern with varying speed
+        const baseSpeed = 0.4;
+        const recordingSpeedMultiplier = 2.5; // Faster animation when recording
+
+        const animationSpeed = isRecording
+          ? baseSpeed * recordingSpeedMultiplier // Increased speed when recording
+          : baseSpeed;
+
+        autoMoveRef.current.angle += dt * animationSpeed;
         const angle = autoMoveRef.current.angle;
 
-        if (variation === 1) {
-          // Circle pattern for variation 1
+        // Add some variation with sine waves for more organic movement
+        const radiusVariation = Math.sin(angle * 0.5) * 0.1 + 0.9;
+
+        if (isRecording) {
+          // Original circle pattern for recording
           mouseRef.current.x = centerX + Math.cos(angle) * radius;
           mouseRef.current.y = centerY + Math.sin(angle) * radius;
         } else {
-          // Figure 8 pattern for other variations
-          mouseRef.current.x = centerX + Math.sin(angle) * radius;
-          mouseRef.current.y = centerY + Math.sin(angle * 2) * radius * 0.5;
+          // Modified pattern for non-recording
+          mouseRef.current.x =
+            centerX + Math.cos(angle) * radius * radiusVariation;
+          mouseRef.current.y =
+            centerY + Math.sin(angle * 1.3) * radius * radiusVariation;
         }
       }
 
@@ -202,8 +194,6 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ isRecording }) => {
     // Cleanup function
     return () => {
       window.removeEventListener("resize", updateSize);
-      window.removeEventListener("mousemove", onPointerMove);
-      window.removeEventListener("pointermove", onPointerMove);
 
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -221,7 +211,7 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ isRecording }) => {
         }
       }
     };
-  }, [variation]);
+  }, [variation, isRecording]);
 
   useEffect(() => {
     // Update material when isRecording changes
@@ -237,10 +227,11 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ isRecording }) => {
   return (
     <div
       ref={containerRef}
-      className="w-full h-full rounded-lg overflow-hidden"
+      className="w-full h-full overflow-hidden rounded-full"
       style={{
         minHeight: "300px",
         background: "transparent",
+        aspectRatio: "1/1",
       }}
     />
   );
