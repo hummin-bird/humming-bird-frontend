@@ -8,7 +8,6 @@ import ProductLoader from "@/components/ProductLoader";
 import { useGlobalContext } from "../hooks/useGlobalContext";
 import { PRODUCT_LIST_URL } from "../components/constants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Product } from "@/types";
 import AnimationBlob from "@/components/AnimationBlob";
 
@@ -121,7 +120,6 @@ const Index = () => {
           )}
         </div>
       </div>
-      <ReactQueryDevtools />
     </QueryClientProvider>
   );
 };
