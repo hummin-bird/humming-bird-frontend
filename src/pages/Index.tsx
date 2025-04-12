@@ -16,16 +16,8 @@ const queryClient = new QueryClient();
 const Index = () => {
   const [isRecording, setIsRecording] = useState(false);
   const { messages, conversationId } = useGlobalContext();
-  const [productList, setProductList] = useState<Product[]>([
-    {
-      description:
-        "Please complete the conversation to get personalized product suggestions",
-      id: "default",
-      image_url: "https://example.com/image.jpg",
-      name: "No products available",
-      website_url: "https://example.com",
-    },
-  ]);
+  const [productList, setProductList] = useState<Product[]>([]);
+  const [showProductList, setShowProductList] = useState(false);
 
   const fetchProductList = useCallback(async () => {
     const response = await fetch(`${PRODUCT_LIST_URL}/${conversationId}`, {
@@ -51,11 +43,13 @@ const Index = () => {
   useEffect(() => {
     if (productListData) {
       setProductList(productListData);
+      setShowProductList(true);
     }
   }, [productListData]);
 
   const onConversationEnd = useCallback(async () => {
     try {
+      setShowProductList(false); // Hide any existing product list while fetching
       await refetch();
     } catch (error) {
       console.error("Error fetching product list:", error);
@@ -64,7 +58,8 @@ const Index = () => {
 
   const onConversationStart = useCallback(async () => {
     setProductList([]);
-  }, [setProductList]);
+    setShowProductList(false);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -75,25 +70,33 @@ const Index = () => {
             HUMMINGBIRD
           </h1>
 
-          <ProductList products={productList} />
-          {/* Audio Visualization */}
-          <div className="flex items-center justify-center w-full">
-            <div className="relative w-64 h-64">
-              <AudioWaveform isRecording={isRecording} />
+          {/* Only show product list if we have products and showProductList is true */}
+          {showProductList && <ProductList products={productList} />}
+          
+          {/* Audio Visualization - hidden during fetching */}
+          {!isFetching && (
+            <div className="flex items-center justify-center w-full">
+              <div className="relative w-64 h-64">
+                <AudioWaveform isRecording={isRecording} />
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Voice Recorder Component */}
-          <VoiceRecorder
-            isRecording={isRecording}
-            setIsRecording={setIsRecording}
-            onConversationEnd={onConversationEnd}
-            onConversationStart={onConversationStart}
-          />
+          {/* Voice Recorder Component - hidden during fetching */}
+          {!isFetching && (
+            <VoiceRecorder
+              isRecording={isRecording}
+              setIsRecording={setIsRecording}
+              onConversationEnd={onConversationEnd}
+              onConversationStart={onConversationStart}
+            />
+          )}
 
           {/* Conversation Display */}
           {isFetching ? (
-            <div>isLoading</div>
+            <div className="text-hummingbird-primary text-center p-4">
+              Loading recommendations...
+            </div>
           ) : (
             <div
               className={`w-full px-3 sm:px-0  
