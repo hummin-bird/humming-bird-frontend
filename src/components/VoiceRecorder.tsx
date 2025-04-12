@@ -94,11 +94,11 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       <div className="w-full max-w-lg text-center min-h-16 px-2">
         {!isRecording && (
           <p className="text-gray-500 italic text-sm sm:text-base">
-            Press the button to start conversation...
+            Tell me what you're building — I'll fetch the perfect tools.
           </p>
         )}
         {isRecording && (
-          <p className="text-gray-400 text-sm sm:text-base">Connected...</p>
+          <p className="text-gray-400 text-sm sm:text-base">Hearing you loud and clear!</p>
         )}
       </div>
     </div>

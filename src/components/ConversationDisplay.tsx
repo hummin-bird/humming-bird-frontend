@@ -27,7 +27,7 @@ const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
     >
       {messages.length === 0 ? (
         <div className="text-center text-gray-500 py-6 sm:py-8">
-          <p>Your conversation will appear here.</p>
+          <p>I'll jot down everything we chat about, right here.</p>
         </div>
       ) : (
         <TransitionGroup>
