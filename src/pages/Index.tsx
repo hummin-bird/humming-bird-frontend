@@ -7,13 +7,13 @@ import { useGlobalContext } from "../hooks/useGlobalContext";
 import { PRODUCT_LIST_URL } from "../components/constants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 const queryClient = new QueryClient();
 
 const Index = () => {
   const [isRecording, setIsRecording] = useState(false);
   const { messages, conversationId } = useGlobalContext();
+  const [productList, setProductList] = useState([]);
 
   const fetchProductList = useCallback(async () => {
     const response = await fetch(`${PRODUCT_LIST_URL}/${conversationId}`, {
@@ -26,9 +26,8 @@ const Index = () => {
   }, [conversationId]);
 
   const {
-    data: productList,
+    data: productListData,
     error,
-    isLoading,
     refetch,
     isFetching,
   } = useQuery({
@@ -36,7 +35,12 @@ const Index = () => {
     queryFn: fetchProductList,
     enabled: false, // Disable automatic fetching
   });
-  console.log("productList :", productList);
+
+  useEffect(() => {
+    if (productListData) {
+      setProductList(productListData);
+    }
+  }, [productListData]);
 
   const onConversationEnd = useCallback(async () => {
     try {
@@ -45,6 +49,10 @@ const Index = () => {
       console.error("Error fetching product list:", error);
     }
   }, [refetch]);
+
+  const onConversationStart = useCallback(async () => {
+    setProductList([]);
+  }, [setProductList]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -67,6 +75,7 @@ const Index = () => {
             isRecording={isRecording}
             setIsRecording={setIsRecording}
             onConversationEnd={onConversationEnd}
+            onConversationStart={onConversationStart}
           />
 
           {/* Conversation Display */}

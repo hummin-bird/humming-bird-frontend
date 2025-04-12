@@ -9,12 +9,14 @@ interface VoiceRecorderProps {
   isRecording: boolean;
   setIsRecording: (isRecording: boolean) => void;
   onConversationEnd: () => void;
+  onConversationStart: () => void;
 }
 
 const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   isRecording,
   setIsRecording,
   onConversationEnd,
+  onConversationStart,
 }) => {
   const { addMessage, setConversationId } = useGlobalContext();
 
@@ -30,6 +32,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   const onConnect = (event) => {
     console.log("Connected to ElevenLabs", event);
     setConversationId(event.conversationId);
+    onConversationStart();
   };
 
   // ElevenLabs conversation setup

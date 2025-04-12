@@ -23,7 +23,7 @@ const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   return (
     <div
       ref={containerRef}
-      className="conversation-container p-3 sm:p-4 w-full max-w-lg max-h-80 sm:max-h-96 overflow-y-auto flex flex-col gap-2"
+      className="conversation-container  rounded-lg p-3 sm:p-4 w-full max-w-lg max-h-80 sm:max-h-96 overflow-y-auto flex flex-col gap-2"
     >
       {messages.length === 0 ? (
         <div className="text-center text-gray-500 py-6 sm:py-8">
