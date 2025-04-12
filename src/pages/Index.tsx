@@ -25,11 +25,18 @@ const Index = () => {
     return response.json();
   }, [conversationId]);
 
-  const { data, error, isLoading, refetch, isFetching } = useQuery({
+  const {
+    data: productList,
+    error,
+    isLoading,
+    refetch,
+    isFetching,
+  } = useQuery({
     queryKey: ["productList"],
     queryFn: fetchProductList,
     enabled: false, // Disable automatic fetching
   });
+  console.log("productList :", productList);
 
   const onConversationEnd = useCallback(async () => {
     try {
