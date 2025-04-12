@@ -7,7 +7,8 @@ interface Props {
 }
 
 const ProductList: React.FC<Props> = ({ products }) => {
-  if (products.length === 0) {
+  // If products is undefined or empty, return null
+  if (!products || products.length === 0) {
     return null;
   }
 
