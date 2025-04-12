@@ -45,18 +45,7 @@ const ProductList: React.FC<Props> = ({ products }) => {
                 {product.description}
               </p>
 
-              <div className="flex justify-between mt-auto">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-xs text-hummingbird-accent hover:text-hummingbird-accent/90"
-                  onClick={() => {
-                    setSelectedProduct(product);
-                    setDialogOpen(true);
-                  }}
-                >
-                  View More
-                </Button>
+              <div className="flex justify-between mt-auto ml-auto items-center">
                 <a
                   href={product.website_url}
                   target="_blank"
@@ -65,6 +54,18 @@ const ProductList: React.FC<Props> = ({ products }) => {
                 >
                   Visit Website
                 </a>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-hummingbird-accent hover:text-hummingbird-accent/90 ml-2"
+                  onClick={() => {
+                    setSelectedProduct(product);
+                    setDialogOpen(true);
+                  }}
+                >
+                  View More
+                </Button>
               </div>
             </div>
           </div>
