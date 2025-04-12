@@ -27,12 +27,6 @@ const WebSocketLogs: React.FC<WebSocketLogsProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full max-w-md mx-auto p-4">
-      <div className="relative w-full flex justify-center mb-4">
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-          <p className="text-white font-medium">Processing your request...</p>
-        </div>
-      </div>
-
       <div className="w-full bg-gray-800 rounded-md p-4 max-h-60 overflow-y-auto">
         <h3 className="text-white font-medium mb-2">Real-time Logs</h3>
         {logs.length === 0 ? (

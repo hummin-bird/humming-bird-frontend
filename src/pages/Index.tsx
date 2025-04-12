@@ -102,7 +102,6 @@ const Index = () => {
           {/* Conversation Display */}
           {isFetching ? (
             <div className="text-hummingbird-primary text-center p-4">
-              Loading recommendations...
               <ProductLoader sessionId={conversationId} />
             </div>
           ) : (

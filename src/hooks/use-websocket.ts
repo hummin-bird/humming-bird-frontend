@@ -21,15 +21,18 @@ const connectToWebSocket = (sessionId: string): Promise<WebSocket> => {
     }
     
     const host = socketHost || window.location.host;
+    // Remove any protocol prefix from the host
+    const cleanHost = host.replace(/^https?:\/\//, '');
+    
     // Force wss:// for Railway.app domains
-    const protocol = host.includes('railway.app') ? 'wss:' : 
+    const protocol = cleanHost.includes('railway.app') ? 'wss:' : 
       window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     
-    const wsUrl = `${protocol}//${host}/ws/logs/${sessionId}`;
+    const wsUrl = `${protocol}//${cleanHost}/ws/logs/${sessionId}`;
     
     console.log('WebSocket Configuration:');
     console.log('- Protocol:', protocol);
-    console.log('- Host:', host);
+    console.log('- Host:', cleanHost);
     console.log('- Full URL:', wsUrl);
     console.log('- Environment VITE_SOCKET_URL:', import.meta.env.VITE_SOCKET_URL);
     
@@ -64,6 +67,36 @@ const connectToWebSocket = (sessionId: string): Promise<WebSocket> => {
   });
 };
 
+const simulateLogMessages = (setLogs: React.Dispatch<React.SetStateAction<LogMessage[]>>) => {
+  const messages = [
+    "Getting the best tools for the job...",
+    "Refining your fine idea...",
+    "Analyzing market trends...",
+    "Generating innovative solutions...",
+    "Crafting unique value propositions...",
+    "Designing user-friendly interfaces...",
+    "Optimizing for market fit...",
+    "Finalizing product details..."
+  ];
+
+  let index = 0;
+  const interval = setInterval(() => {
+    if (index < messages.length) {
+      const logMessage: LogMessage = {
+        timestamp: new Date().toISOString(),
+        level: "info",
+        message: messages[index]
+      };
+      setLogs(prevLogs => [...prevLogs, logMessage]);
+      index++;
+    } else {
+      clearInterval(interval);
+    }
+  }, 4000); // Increased delay to 4 seconds between messages
+
+  return () => clearInterval(interval);
+};
+
 export function useWebSocket(sessionId: string) {
   const [logs, setLogs] = useState<LogMessage[]>([]);
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -81,37 +114,19 @@ export function useWebSocket(sessionId: string) {
     }
     
     let reconnectTimeout: NodeJS.Timeout;
+    let simulationCleanup: (() => void) | null = null;
     
     const establishConnection = async () => {
-      setIsLoading(true);
       try {
         // First establish WebSocket connection
         const newSocket = await connectToWebSocket(sessionId);
-        setSocket(newSocket);
-        setIsConnected(true);
-        setRetryCount(0);
-
-        // Handle incoming log messages
+        
+        // Set up message handlers before setting the socket state
         newSocket.onmessage = (event) => {
           console.log('Raw WebSocket message received:', event.data);
           
           try {
-            // Check if the message is a simple string first
-            if (typeof event.data === 'string' && event.data.trim() === 'pong') {
-              console.log('Received pong response');
-              return;
-            }
-
-            // Try to clean the message if it's a string
-            let messageData = event.data;
-            if (typeof messageData === 'string') {
-              // Remove any potential BOM or other invisible characters
-              messageData = messageData.trim();
-              // Remove any potential null bytes
-              messageData = messageData.replace(/\0/g, '');
-            }
-            console.log('Message data:', messageData);
-            const data = JSON.parse(messageData);
+            const data = JSON.parse(event.data);
             console.log('Successfully parsed message:', data);
             
             // Handle connection established message
@@ -135,20 +150,12 @@ export function useWebSocket(sessionId: string) {
               console.warn('Received message with unexpected format:', data);
             }
           } catch (error) {
-            console.error('Error parsing message:', error);
-            console.error('Raw message type:', typeof event.data);
-            console.error('Raw message length:', event.data.length);
-            console.error('Raw message content:', event.data);
-            
-            // Try to find where the JSON parsing fails
-            try {
-              const firstChar = event.data.charAt(0);
-              const secondChar = event.data.charAt(1);
-              console.error('First character:', firstChar, 'ASCII:', firstChar.charCodeAt(0));
-              console.error('Second character:', secondChar, 'ASCII:', secondChar.charCodeAt(0));
-            } catch (e) {
-              console.error('Could not analyze message characters:', e);
-            }
+            console.error('JSON parsing failed:', error);
+            console.error('Error details:', {
+              name: error.name,
+              message: error.message,
+              stack: error.stack
+            });
           }
         };
 
@@ -169,15 +176,61 @@ export function useWebSocket(sessionId: string) {
           }
         };
 
-        // Now that WebSocket is connected, fetch products
-        const response = await fetch(`/api/v1/products/${sessionId}`);
-        const data = await response.json();
-        setProducts(data.products);
+        // Now that handlers are set up, update the socket state
+        setSocket(newSocket);
+        setIsConnected(true);
+        setRetryCount(0);
+
+        // Start simulating log messages
+        simulationCleanup = simulateLogMessages(setLogs);
+
+        // Make the HTTP request for products
+        const host = import.meta.env.VITE_SOCKET_URL || window.location.host;
+        // Remove any protocol prefix from the host
+        const cleanHost = host.replace(/^https?:\/\//, '');
+        
+        const protocol = cleanHost.includes('railway.app') ? 'https:' : 
+          window.location.protocol === 'https:' ? 'https:' : 'http:';
+        
+        const productsUrl = `${protocol}//${cleanHost}/api/v1/products/${sessionId}`;
+        console.log('Fetching products from:', productsUrl);
+
+        try {
+          const response = await fetch(productsUrl);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const text = await response.text();
+          console.log('Raw products response:', text);
+          
+          try {
+            const data = JSON.parse(text);
+            console.log('Parsed products data:', data);
+            setProducts(data.products);
+          } catch (error) {
+            console.error('Error parsing products JSON:', error);
+            console.error('Raw response:', text);
+            throw new Error('Invalid JSON response from server');
+          }
+        } catch (error) {
+          console.error('Error fetching products:', error);
+          setProducts([{
+            id: "error",
+            name: "Error loading products",
+            description: "We encountered an error while loading products. Please try again later.",
+            website_url: "https://example.com",
+            image_url: "https://example.com/image.jpg",
+          }]);
+        }
       } catch (error) {
-        console.error('Error establishing connection:', error);
+        console.error('Error establishing WebSocket connection:', error);
         setIsConnected(false);
       } finally {
-        setIsLoading(false);
+        // Clean up the simulation when done
+        if (simulationCleanup) {
+          simulationCleanup();
+        }
       }
     };
 
@@ -188,6 +241,9 @@ export function useWebSocket(sessionId: string) {
       clearTimeout(reconnectTimeout);
       if (socket?.readyState === WebSocket.OPEN) {
         socket.close();
+      }
+      if (simulationCleanup) {
+        simulationCleanup();
       }
     };
   }, [sessionId, retryCount]);
