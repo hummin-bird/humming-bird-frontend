@@ -4,6 +4,7 @@ import AudioWaveform from "../components/AudioWaveform";
 import VoiceRecorder from "../components/VoiceRecorder";
 import ConversationDisplay from "../components/ConversationDisplay";
 import ProductList from "@/components/ProductList";
+import ProductLoader from "@/components/ProductLoader";
 import { useGlobalContext } from "../hooks/useGlobalContext";
 import { PRODUCT_LIST_URL } from "../components/constants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -103,6 +104,7 @@ const Index = () => {
           {isFetching ? (
             <div className="text-hummingbird-primary text-center p-4">
               Loading recommendations...
+              <ProductLoader sessionId={conversationId} />
             </div>
           ) : (
             <div
