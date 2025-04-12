@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import io, { Socket } from 'socket.io-client';
 
 interface LogMessage {
   timestamp: string;
@@ -7,34 +6,31 @@ interface LogMessage {
   message: string;
 }
 
-const connectToWebSocket = (sessionId: string) => {
-  // Try using secure protocol
-  const socket = io('wss://humming-bird-backend-production.up.railway.app/ws/logs/' + sessionId, {
-    transports: ['websocket'],
-    forceNew: true,
-    reconnection: true,
-    reconnectionAttempts: 5,
-    reconnectionDelay: 1000
-  });
+const connectToWebSocket = (sessionId: string): WebSocket => {
+  // Use secure WebSocket protocol
+  const socket = new WebSocket(`wss://humming-bird-backend-production.up.railway.app/ws/logs/${sessionId}`);
   
-  socket.on('connect', () => {
+  socket.onopen = () => {
     console.log('Connected to WebSocket');
-  });
+  };
   
-  socket.on('connect_error', (error) => {
+  socket.onerror = (error) => {
     console.error('Connection error:', error);
-  });
+  };
   
-  socket.on('message', (data) => {
-    console.log('Received message:', data);
-  });
+  socket.onmessage = (event) => {
+    console.log('Received message:', event.data);
+  };
   
   return socket;
 };
 
 export function useWebSocket(sessionId: string) {
   const [logs, setLogs] = useState<LogMessage[]>([]);
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRY_ATTEMPTS = 5;
+  const RETRY_DELAY = 1000;
 
   useEffect(() => {
     if (!sessionId) {
@@ -42,21 +38,41 @@ export function useWebSocket(sessionId: string) {
       return;
     }
     
+    let reconnectTimeout: NodeJS.Timeout;
+    
     // Connect to the WebSocket server
     const newSocket = connectToWebSocket(sessionId);
     setSocket(newSocket);
 
     // Handle incoming log messages
-    newSocket.on('message', (data: LogMessage) => {
-      console.log('Adding log message:', data);
-      setLogs(prevLogs => [...prevLogs, data]);
-    });
+    newSocket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data) as LogMessage;
+        console.log('Adding log message:', data);
+        setLogs(prevLogs => [...prevLogs, data]);
+      } catch (error) {
+        console.error('Error parsing message:', error);
+      }
+    };
+    
+    // Handle reconnection
+    newSocket.onclose = () => {
+      if (retryCount < MAX_RETRY_ATTEMPTS) {
+        console.log(`WebSocket closed. Attempting to reconnect (${retryCount + 1}/${MAX_RETRY_ATTEMPTS})...`);
+        reconnectTimeout = setTimeout(() => {
+          setRetryCount(retryCount + 1);
+        }, RETRY_DELAY);
+      } else {
+        console.error('WebSocket connection failed after maximum retry attempts');
+      }
+    };
 
     // Cleanup on unmount
     return () => {
-      newSocket.disconnect();
+      clearTimeout(reconnectTimeout);
+      newSocket.close();
     };
-  }, [sessionId]);
+  }, [sessionId, retryCount]);
 
   return { logs, socket };
 }
