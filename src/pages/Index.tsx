@@ -42,8 +42,8 @@ const Index = () => {
   });
 
   useEffect(() => {
-    if (productListData) {
-      setProductList(productListData);
+    if (productListData.products) {
+      setProductList(productListData.products);
       setShowProductList(true);
     }
   }, [productListData]);
