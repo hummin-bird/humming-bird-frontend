@@ -80,6 +80,11 @@
     font-family: 'Inter', sans-serif;
     font-weight: 700;
     letter-spacing: 0.05em;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(#fff3, #fff3), linear-gradient(90deg, #03ff65 25%, #28b4f5 75%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    max-width: 560px;
   }
 }
 
