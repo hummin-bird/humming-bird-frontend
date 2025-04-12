@@ -3,17 +3,28 @@ import { useQuery } from "@tanstack/react-query";
 import AudioWaveform from "../components/AudioWaveform";
 import VoiceRecorder from "../components/VoiceRecorder";
 import ConversationDisplay from "../components/ConversationDisplay";
+import ProductList from "@/components/ProductList";
 import { useGlobalContext } from "../hooks/useGlobalContext";
 import { PRODUCT_LIST_URL } from "../components/constants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Product } from "@/types";
 
 const queryClient = new QueryClient();
 
 const Index = () => {
   const [isRecording, setIsRecording] = useState(false);
   const { messages, conversationId } = useGlobalContext();
-  const [productList, setProductList] = useState([]);
+  const [productList, setProductList] = useState<Product[]>([
+    {
+      description:
+        "Please complete the conversation to get personalized product suggestions",
+      id: "default",
+      image_url: "https://example.com/image.jpg",
+      name: "No products available",
+      website_url: "https://example.com",
+    },
+  ]);
 
   const fetchProductList = useCallback(async () => {
     const response = await fetch(`${PRODUCT_LIST_URL}/${conversationId}`, {
@@ -63,6 +74,7 @@ const Index = () => {
             HUMMINGBIRD
           </h1>
 
+          <ProductList products={productList} />
           {/* Audio Visualization */}
           <div className="flex items-center justify-center w-full">
             <div className="relative w-64 h-64">
