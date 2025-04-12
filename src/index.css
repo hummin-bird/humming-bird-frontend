@@ -126,15 +126,16 @@
 .message.ai {
   background-color: #252A37;
   border-left: 3px solid #6B46C1;
-  align-self: flex-start;
+  justify-self: flex-start;
   color: #E2E8F0;
 }
 
 .message.user {
   background-color: #2C3851;
   border-right: 3px solid #4299E1;
-  align-self: flex-end;
+  justify-self: flex-end;
   color: #E2E8F0;
+  justify-content: flex-end;
 }
 
 /* Mobile Responsive Design */
@@ -163,4 +164,26 @@
   background: rgba(26, 31, 44, 0.7);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+
+.fade-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 500ms, transform 500ms;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 500ms;
 }

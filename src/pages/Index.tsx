@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import AudioWaveform from "../components/AudioWaveform";
 import VoiceRecorder from "../components/VoiceRecorder";
@@ -7,13 +7,13 @@ import { useGlobalContext } from "../hooks/useGlobalContext";
 import { PRODUCT_LIST_URL } from "../components/constants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 const queryClient = new QueryClient();
 
 const Index = () => {
   const [isRecording, setIsRecording] = useState(false);
   const { messages, conversationId } = useGlobalContext();
-  console.log("conversationId :", conversationId);
 
   const fetchProductList = useCallback(async () => {
     const response = await fetch(`${PRODUCT_LIST_URL}/${conversationId}`, {

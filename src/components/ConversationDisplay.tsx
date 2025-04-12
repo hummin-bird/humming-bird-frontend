@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useIsMobile } from "../hooks/use-mobile";
 import { Message } from "../types";
 
@@ -9,13 +10,14 @@ interface ConversationDisplayProps {
 const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   messages,
 }) => {
-  const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
+  const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
+    nodeRefs.current = nodeRefs.current.slice(0, messages.length);
   }, [messages]);
 
   return (
@@ -28,14 +30,41 @@ const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
           <p>Your conversation will appear here.</p>
         </div>
       ) : (
-        messages.map((message) => (
-          <div key={message.id} className={`message ${message.sender}`}>
-            <div className="font-medium mb-1 text-sm sm:text-base">
-              {message.sender === "ai" ? "Hummingbird:" : "User:"}
-            </div>
-            <div className="text-sm sm:text-base">{message.text}</div>
-          </div>
-        ))
+        <TransitionGroup>
+          {messages.map((message, index) => {
+            if (!nodeRefs.current[index]) {
+              nodeRefs.current[index] = null;
+            }
+            return (
+              <CSSTransition
+                key={message.id}
+                nodeRef={nodeRefs.current[index]}
+                timeout={500}
+                classNames="fade"
+                in={index === messages.length - 1}
+                onEntered={() =>
+                  nodeRefs.current[index]?.classList.remove("fade-enter-active")
+                }
+              >
+                <div
+                  className={`flex ${
+                    message.sender === "ai" ? "justify-start" : "justify-end"
+                  }`}
+                >
+                  <div
+                    ref={(el) => (nodeRefs.current[index] = el)}
+                    className={`my-3 message ${message.sender}`}
+                  >
+                    <div className="font-medium mb-1 text-sm sm:text-base">
+                      {message.sender === "ai" ? "Hummingbird:" : "User:"}
+                    </div>
+                    <div className="text-sm sm:text-base">{message.text}</div>
+                  </div>
+                </div>
+              </CSSTransition>
+            );
+          })}
+        </TransitionGroup>
       )}
     </div>
   );
