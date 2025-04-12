@@ -7,8 +7,8 @@ interface LogMessage {
 }
 
 const connectToWebSocket = (sessionId: string): WebSocket => {
-  // Use secure WebSocket protocol
-  const socket = new WebSocket(`wss://humming-bird-backend-production.up.railway.app/ws/logs/${sessionId}`);
+  // Use standard WebSocket protocol
+  const socket = new WebSocket(`ws://humming-bird-backend-production.up.railway.app/ws/logs/${sessionId}`);
   
   socket.onopen = () => {
     console.log('Connected to WebSocket');
