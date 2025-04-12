@@ -28,9 +28,15 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   // ElevenLabs conversation setup
   const conversation = useConversation({
     onConnect: (event) => console.log("Connected to ElevenLabs", event),
-    onDisconnect: (event) => console.log("Disconnected from ElevenLabs", event),
+    onDisconnect: (event) => {
+      console.log("Disconnected from ElevenLabs", event);
+      setIsRecording(false);
+    },
     onMessage,
-    onError: (error) => console.error("Error with ElevenLabs:", error),
+    onError: (error) => {
+      setIsRecording(false);
+      console.error("Error with ElevenLabs:", error);
+    },
   });
 
   const toggleConversation = useCallback(async () => {
