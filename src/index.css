@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Miroles';
+  src: url('/fonts/miroles/miroles.ttf') format('truetype');
+  font-weight: 1000;
+  font-feature-settings: "salt" on, "liga" on;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --background: 240 10% 3.9%;
@@ -77,8 +86,9 @@
   }
   
   h1.humming-title {
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
+    font-family: 'Miroles', serif;
+    font-weight: 1000;
+    font-size: 3.2rem;
     letter-spacing: 0.05em;
     -webkit-text-fill-color: transparent;
     background-image: linear-gradient(#fff3, #fff3), linear-gradient(90deg, #03ff65 25%, #28b4f5 75%);
