@@ -10,6 +10,7 @@ import { PRODUCT_LIST_URL } from "../components/constants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Product } from "@/types";
+import AnimationBlob from "@/components/AnimationBlob";
 
 const queryClient = new QueryClient();
 
@@ -85,11 +86,10 @@ const Index = () => {
           {!isFetching && !showProductList && (
             <div className="flex items-center justify-center w-full">
               <div className="relative w-64 h-64">
-                <AudioWaveform isRecording={isRecording} />
+                <AnimationBlob isRecording={isRecording} />
               </div>
             </div>
           )}
-
           {/* Voice Recorder Component - hidden during fetching */}
           {!isFetching && (
             <VoiceRecorder

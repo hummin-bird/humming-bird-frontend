@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
 
@@ -118,6 +117,10 @@ export default {
 					'100%': {
 						transform: 'scaleY(1)'
 					}
+				},
+				'float': {
+					"0%, 100%": { transform: "translateY(0px)" },
+					"50%": { transform: "translateY(-8px)" },
 				}
 			},
 			animation: {
@@ -129,6 +132,7 @@ export default {
 				'wave-3': 'wave 1.8s linear infinite',
 				'wave-4': 'wave 2.0s linear infinite',
 				'wave-5': 'wave 1.4s linear infinite',
+				'float': 'float 8s ease-in-out infinite',
 			}
 		}
   },
