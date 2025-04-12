@@ -1,11 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { Product } from "@/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   products: Product[] | [];
 }
 
 const ProductList: React.FC<Props> = ({ products }) => {
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   // If products is undefined or empty, return null
   if (!products || products.length === 0 || !Array.isArray(products)) {
     return null;
@@ -33,18 +44,62 @@ const ProductList: React.FC<Props> = ({ products }) => {
               <p className="text-sm text-gray-300 line-clamp-2">
                 {product.description}
               </p>
-              <a
-                href={product.website_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-hummingbird-accent hover:underline mt-auto self-end"
-              >
-                Visit Website
-              </a>
+
+              <div className="flex justify-between mt-auto">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-hummingbird-accent hover:text-hummingbird-accent/90"
+                  onClick={() => {
+                    setSelectedProduct(product);
+                    setDialogOpen(true);
+                  }}
+                >
+                  View More
+                </Button>
+                <a
+                  href={product.website_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-hummingbird-accent hover:underline"
+                >
+                  Visit Website
+                </a>
+              </div>
             </div>
           </div>
         ))}
       </div>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        {selectedProduct && (
+          <DialogContent className="bg-hummingbird-dark text-white max-w-md mx-auto">
+            <DialogHeader>
+              <DialogTitle className="text-hummingbird-primary">
+                {selectedProduct.name}
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="flex flex-col gap-4 my-4">
+              <img
+                src={selectedProduct.image_url}
+                alt={selectedProduct.name}
+                className="w-full h-48 object-cover rounded-md"
+              />
+              <p className="text-gray-300">{selectedProduct.description}</p>
+            </div>
+
+            <DialogFooter>
+              <Button
+                onClick={() => setDialogOpen(false)}
+                className="bg-hummingbird-accent text-white hover:bg-hummingbird-accent/90"
+              >
+                Confirm
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        )}
+      </Dialog>
     </div>
   );
 };

@@ -67,7 +67,7 @@ export default {
 				hummingbird: {
 					primary: '#4299E1',
 					secondary: '#3182CE',
-					accent: '#6B46C1',
+					accent: 'rgb(3, 255, 101)',
 					light: '#1A1F2C',  // Changed to dark color
 					dark: '#121520',    // Added darker color
 					background: '#0F1219', // Added dark background
