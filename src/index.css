@@ -109,7 +109,6 @@
 /* Conversation Styles */
 .conversation-container {
   border-radius: 12px;
-  overflow: hidden;
   transition: all 0.3s ease;
   background-color: #1A1F2C;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
@@ -124,7 +123,7 @@
   max-width: 80%;
 }
 
-.message.bot {
+.message.ai {
   background-color: #252A37;
   border-left: 3px solid #6B46C1;
   align-self: flex-start;

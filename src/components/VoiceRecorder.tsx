@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff } from "lucide-react";
-import { useIsMobile } from "../hooks/use-mobile";
 import { useConversation } from "@11labs/react";
+import { useGlobalContext } from "@/hooks/useGlobalContext";
+import { v4 as uuidv4 } from "uuid";
 
 interface VoiceRecorderProps {
   isRecording: boolean;
@@ -13,11 +14,22 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   isRecording,
   setIsRecording,
 }) => {
+  const { addMessage } = useGlobalContext();
+
+  const onMessage = (event) => {
+    console.log("event :", event);
+    addMessage({
+      id: uuidv4(),
+      text: event.message,
+      sender: event.source,
+    });
+  };
+
   // ElevenLabs conversation setup
   const conversation = useConversation({
     onConnect: (event) => console.log("Connected to ElevenLabs", event),
     onDisconnect: (event) => console.log("Disconnected from ElevenLabs", event),
-    onMessage: (message) => console.log("Message from ElevenLabs:", message),
+    onMessage,
     onError: (error) => console.error("Error with ElevenLabs:", error),
   });
 
