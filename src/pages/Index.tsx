@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import AudioWaveform from "../components/AudioWaveform";
@@ -18,6 +17,8 @@ const Index = () => {
   const { messages, conversationId } = useGlobalContext();
   const [productList, setProductList] = useState<Product[]>([]);
   const [showProductList, setShowProductList] = useState(false);
+
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const fetchProductList = useCallback(async () => {
     const response = await fetch(`${PRODUCT_LIST_URL}/${conversationId}`, {
@@ -47,6 +48,12 @@ const Index = () => {
     }
   }, [productListData]);
 
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   const onConversationEnd = useCallback(async () => {
     try {
       setShowProductList(false); // Hide any existing product list while fetching
@@ -72,7 +79,7 @@ const Index = () => {
 
           {/* Only show product list if we have products and showProductList is true */}
           {showProductList && <ProductList products={productList} />}
-          
+
           {/* Audio Visualization - hidden during fetching */}
           {!isFetching && (
             <div className="flex items-center justify-center w-full">
@@ -107,6 +114,7 @@ const Index = () => {
                 } `}
             >
               <ConversationDisplay messages={messages} />
+              <div ref={messagesEndRef} />
             </div>
           )}
         </div>
