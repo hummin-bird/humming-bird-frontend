@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useIsMobile } from "../hooks/use-mobile";
@@ -32,7 +33,11 @@ const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   return (
     <div className="w-full max-w-lg mx-auto">
       {hasMessages ? (
-        <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
+        <Collapsible 
+          open={isOpen} 
+          onOpenChange={setIsOpen} 
+          className="w-full"
+        >
           <div className="flex items-center justify-end mb-2">
             <CollapsibleTrigger className="p-1 rounded-md hover:bg-hummingbird-dark/50 transition-colors">
               {isOpen ? (
@@ -43,7 +48,7 @@ const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
             </CollapsibleTrigger>
           </div>
 
-          <CollapsibleContent>
+          <CollapsibleContent className="transition-all duration-300 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
             <div className="relative">
               <div
                 ref={containerRef}
