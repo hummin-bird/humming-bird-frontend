@@ -30,14 +30,12 @@ const ProductList: React.FC<Props> = ({ products }) => {
             key={product.id}
             className="flex gap-3 p-3 bg-hummingbird-dark rounded-md hover:bg-hummingbird-dark/70 transition-colors"
           >
-            <div className="flex-shrink-0">
-              <div className="w-16 h-16 rounded-md overflow-hidden">
-                <img
-                  src={product.image_url}
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+            <div className="flex-shrink-0 items-center justify-center flex">
+              <img
+                src={product.image_url}
+                alt={product.name}
+                className="max-w-16 max-h-16 rounded-md object-contain"
+              />
             </div>
             <div className="flex flex-col flex-1">
               <h3 className="font-bold text-hummingbird-primary">
