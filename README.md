@@ -1,73 +1,162 @@
-# Welcome to your Lovable project
+# Encode AI Hackathon 2025 - Humming Bird
 
-## Project info
+## 🏆 About the Hackathon
 
-**URL**: https://lovable.dev/projects/883ae815-4972-41e4-b948-3900c423bbd5
+The **Encode AI Hackathon 2025** is a three-day immersive AI experience held in Shoreditch. It brings together top AI talent, developers, and industry leaders for hands-on innovation. Our team embraced the opportunity to build **Humming Bird** — an intelligent, conversation-driven app that guides aspiring founders from idea to execution using smart AI workflows.
 
-## How can I edit this code?
+## 🚀 About Humming Bird
 
-There are several ways of editing your application.
+**Humming Bird** is an AI-powered startup ideation and tool recommendation assistant that:
 
-**Use Lovable**
+- Chats with users to understand their startup vision
+- Breaks down business ideas into structured development steps
+- Recommends optimal tools and technologies to build the product
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/883ae815-4972-41e4-b948-3900c423bbd5) and start prompting.
+With the help of **Portia AI**, Humming Bird transforms vague startup ideas into actionable roadmaps.
 
-Changes made via Lovable will be committed automatically to this repo.
+**Check out our [exclidraw](https://excalidraw.com/#room=20a848c6f4d32631a366,Djw04yUeLslEFkLRntfsHw) for the draft plan before we code**
 
-**Use your preferred IDE**
+## 🎯Code Architecture
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Check out the [link](https://github.com/hummin-bird/humming-bird-backend/blob/main/code_architecture.md)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## ⚙️ Installation (Run Locally)
 
-Follow these steps:
+### 1. Clone the Repositories
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+git clone https://github.com/hummin-bird/humming-bird-frontend.git
+git clone https://github.com/hummin-bird/humming-bird-backend.git
 ```
 
-**Edit a file directly in GitHub**
+### 2. Set Up Environment Variables
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Copy the `.env.example` to `.env` and insert your API keys:
 
-**Use GitHub Codespaces**
+```bash
+cd humming-bird-backend
+cp .env.example .env
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+#### Required Environment Variables
 
-## What technologies are used for this project?
+- `PORTIA_API_KEY`: Portia AI key for workflow generation and tool recommendations
+- `OPENAI_API_KEY`: OpenAI key for GPT-4o-mini to enhance conversation and reasoning
+- `GEMINI_API_KEY`: API key for Gemini (optional LLM integration)
+- `TAVILY_API_KEY`: Key for smart search via Tavily
+- `AGENT_ID`: Identifier for the deployed agent in your backend
+- `ELEVENLABS_API_KEY`: Key for ElevenLabs Conversational AI for natural voice interaction
 
-This project is built with:
+### 3. Install Dependencies
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+#### Backend
 
-## How can I deploy this project?
+Make sure Python 3.12+ is installed:s
 
-Simply open [Lovable](https://lovable.dev/projects/883ae815-4972-41e4-b948-3900c423bbd5) and click on Share -> Publish.
+```bash
+cd humming-bird-backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python main.py
+```
 
-## Can I connect a custom domain to my Lovable project?
+#### Frontend
 
-Yes it is!
+```bash
+cd humming-bird-frontend
+brew install pnpm
+pnpm install
+pnpm run dev
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 📁 About the Project
+
+- **What?**
+  Humming Bird is an AI assistant that transforms abstract startup ideas into development blueprints and toolkits.
+
+- **Why?**
+  Many aspiring entrepreneurs have ideas but struggle with execution. Humming Bird offers a guided path.
+
+- **How?**
+  Using Portia AI, it decomposes user input into a tech roadmap and identifies practical tools (e.g., Django, Supabase, React).
+
+---
+
+## 👥 Team Members
+
+- **[Ying Liu]**
+  - [GitHub](https://github.com/sophia172)
+  - [LinkedIn](https://www.linkedin.com/in/yingliu-data/)
+- **[Mu Jing Tsai]**
+  - [GitHub](https://github.com/sophia172)
+  - [LinkedIn](https://www.linkedin.com/in/mu-jing-tsai/)
+- **[Ana Shevchenko]**
+  - [GitHub](https://github.com/a17o)
+  - [LinkedIn](https://www.linkedin.com/in/cronaut/)
+  
+---
+
+## 🎯 Key Features
+
+- **Conversational Business Ideation**: Real-time voice-driven dialogue powered by ElevenLabs helps users express and refine ideas naturally.
+
+- **Strategic Workflow Generation**: Portia AI translates conversations into structured, actionable development workflows.
+
+- **Tool Recommendations**: Suggests relevant tools and technologies at each development phase, powered by Portia's smart selection logic.
+
+- **Custom Portia AI Integration**: Uses GPT-4o-mini alongside tailored modules like planning, search, and LLMs for enhanced interaction.
+
+- **Beautiful User Interface**: Clean, engaging UI to display conversation history and insights intuitively.
+
+- **Persistent Conversation History**: Stores sessions for context-aware assistance and ongoing project development.
+
+- **Sponsor Showcase Section**: Frontend section to highlight sponsors, supporting transparency and acknowledgment.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend:** TypeScript (Lovable)
+- **Backend:** Python (FastAPI)
+- **AI Agents:** Portia, OpenAI, ElevenLabs
+
+---
+
+## 🔗 Links
+
+- **Live Demo:** [Coming Soon]
+- **GitHub Repos:**
+  - Frontend: [https://github.com/hummin-bird/humming-bird-frontend.git](https://github.com/hummin-bird/humming-bird-frontend.git)
+  - Backend: [https://github.com/hummin-bird/humming-bird-backend.git](https://github.com/hummin-bird/humming-bird-backend.git)
+
+---
+
+## 💡 Future Enhancements
+
+We aim to evolve Humming Bird into a universal launchpad for all types of products, not just software. Planned features include:
+
+### 🌐 Cross-Industry Product Support
+
+Support for physical goods, services, digital media — expanding usability beyond software.
+
+### 🚀 Integrated Launch Tools
+
+End-to-end platform for ideation to launch: hosting, deployment, analytics, and customer feedback.
+
+### 👥 Community Engagement and Feedback
+
+- **Forums & Q&A**: For peer-to-peer help and idea exchange
+- **Surveys & Feedback Tools**: Continuous improvement via community insight
+- **Reviews & Testimonials**: Build transparency and reputation
+- **Recognition Systems**: Incentivize and reward user engagement
+
+### 📊 Advanced Analytics
+
+Real-time insights on user behavior, tech trends, and idea viability.
+
+### 🤖 Personalized Recommendations
+
+AI-suggested tools, features, or growth strategies based on user behavior and industry trends.
