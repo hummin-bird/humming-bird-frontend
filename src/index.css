@@ -136,13 +136,34 @@
   height: 30%;
 }
 
+/* Gradient Border Style */
+.gradient-border {
+  border: 1px solid;
+  border-image-slice: 1;
+  border-image-source: linear-gradient(90deg, #03ff65, #28b4f5);
+}
+
 /* Conversation Styles */
 .conversation-container {
+  position: relative;
   transition: all 0.3s ease;
   background-color: #1A1F2C;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   width: 100%;
   max-width: 100%;
+}
+
+.conversation-fade-edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(to bottom, #1A1F2C, transparent);
+  pointer-events: none;
+  z-index: 1;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
 }
 
 .message {
