@@ -32,11 +32,7 @@ const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   return (
     <div className="w-full max-w-lg mx-auto">
       {hasMessages ? (
-        <Collapsible 
-          open={isOpen} 
-          onOpenChange={setIsOpen} 
-          className="w-full"
-        >
+        <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
           <div className="flex items-center justify-end mb-2">
             <CollapsibleTrigger className="p-1 rounded-md hover:bg-hummingbird-dark/50 transition-colors">
               {isOpen ? (
@@ -48,10 +44,10 @@ const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
           </div>
 
           <div className="relative">
-            <CollapsibleContent className="transition-all duration-500 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+            <CollapsibleContent className="gradient-border-wrapper transition-all duration-500 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
               <div
                 ref={containerRef}
-                className="conversation-container rounded-lg p-3 sm:p-4 w-full max-h-80 sm:max-h-96 overflow-y-auto flex flex-col gap-2"
+                className="conversation-container gradient-border rounded-lg p-3 sm:p-4 w-full max-h-80 sm:max-h-96 overflow-y-auto flex flex-col gap-2"
               >
                 <TransitionGroup>
                   {messages.map((message, index) => {
@@ -100,27 +96,26 @@ const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
             </CollapsibleContent>
 
             {/* Collapsed state */}
-            <div 
+            <div
               className="collapsed-state"
               data-state={isOpen ? "open" : "closed"}
               onClick={() => !isOpen && setIsOpen(true)}
             >
               <div className="conversation-container rounded-lg p-3 sm:p-4 w-full h-full flex items-center justify-center">
-                <div className="text-center text-gray-500">
-                </div>
+                <div className="text-center text-gray-500"></div>
               </div>
             </div>
             <div className="conversation-fade-edge"></div>
           </div>
         </Collapsible>
       ) : (
-        <div className="relative">
-          <div className="conversation-container rounded-lg p-3 sm:p-4 w-full max-h-80 sm:max-h-96 overflow-y-auto flex flex-col gap-2">
+        <div className="relative gradient-border-wrapper">
+          <div className="conversation-container gradient-border rounded-lg p-3 sm:p-4 w-full max-h-80 sm:max-h-96 overflow-y-auto flex flex-col gap-2">
             <div className="text-center text-gray-500 py-6 sm:py-8">
               <p>I'll jot down everything we chat about, right here.</p>
             </div>
           </div>
-          <div className="conversation-fade-edge"></div>
+          {/* <div className="conversation-fade-edge"></div> */}
         </div>
       )}
     </div>
