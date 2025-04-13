@@ -18,7 +18,8 @@ With the help of **Portia AI**, Humming Bird transforms vague startup ideas into
 
 ## 🎯Code Architecture
 
-Check out the [link](https://github.com/hummin-bird/humming-bird-backend/blob/main/code_architecture.md)
+- [Backend Code Architecture](https://github.com/hummin-bird/humming-bird-backend/blob/main/code_architecture.md)
+- [Frontend Code Architecture](https://github.com/hummin-bird/humming-bird-frontend/blob/main/code-architecture.md)
 
 ## ⚙️ Installation (Run Locally)
 
