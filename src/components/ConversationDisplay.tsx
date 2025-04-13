@@ -44,10 +44,10 @@ const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
           </div>
 
           <div className="relative">
-            <CollapsibleContent className="gradient-border-wrapper transition-all duration-500 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+            <CollapsibleContent className="transition-all duration-500 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
               <div
                 ref={containerRef}
-                className="conversation-container gradient-border rounded-lg p-3 sm:p-4 w-full max-h-80 sm:max-h-96 overflow-y-auto flex flex-col gap-2"
+                className="conversation-container rounded-lg p-3 sm:p-4 w-full max-h-80 sm:max-h-96 overflow-y-auto flex flex-col gap-2"
               >
                 <TransitionGroup>
                   {messages.map((message, index) => {
@@ -109,8 +109,8 @@ const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
           </div>
         </Collapsible>
       ) : (
-        <div className="relative gradient-border-wrapper">
-          <div className="conversation-container gradient-border rounded-lg p-3 sm:p-4 w-full max-h-80 sm:max-h-96 overflow-y-auto flex flex-col gap-2">
+        <div className="relative">
+          <div className="conversation-container rounded-lg p-3 sm:p-4 w-full max-h-80 sm:max-h-96 overflow-y-auto flex flex-col gap-2">
             <div className="text-center text-gray-500 py-6 sm:py-8">
               <p>I'll jot down everything we chat about, right here.</p>
             </div>
