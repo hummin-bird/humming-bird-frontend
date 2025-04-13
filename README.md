@@ -86,19 +86,13 @@ pnpm run dev
   Using Portia AI, it decomposes user input into a tech roadmap and identifies practical tools (e.g., Django, Supabase, React).
 
 ---
-
 ## 👥 Team Members
-
-- **[Ying Liu]**
-  - [GitHub](https://github.com/sophia172)
-  - [LinkedIn](https://www.linkedin.com/in/yingliu-data/)
-- **[Mu Jing Tsai]**
-  - [GitHub](https://github.com/sophia172)
-  - [LinkedIn](https://www.linkedin.com/in/mu-jing-tsai/)
-- **[Ana Shevchenko]**
-  - [GitHub](https://github.com/a17o)
-  - [LinkedIn](https://www.linkedin.com/in/cronaut/)
-  
+- **Ying Liu**  
+  [GitHub](https://github.com/sophia172) | [LinkedIn](https://www.linkedin.com/in/yingliu-data/)
+- **Mu Jing Tsai**  
+  [GitHub](https://github.com/moojing) | [LinkedIn](https://www.linkedin.com/in/mu-jing-tsai/)
+- **Ana Shevchenko**  
+  [GitHub](https://github.com/a17o) | [LinkedIn](https://www.linkedin.com/in/cronaut/)
 ---
 
 ## 🎯 Key Features
