@@ -78,13 +78,13 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
         <Button
           className={`h-14 w-14 sm:h-16 sm:w-16 rounded-full ${
             isRecording
-              ? "bg-[radial-gradient(circle_at_center,_#03ff65_0%,_#28b4f5_100%)] text-white"
+              ? "bg-white bg-[radial-gradient(circle_at_center,_rgba(66,153,225,0.1)_0%,_rgba(66,153,225,0.2)_100%)] text-white"
               : "bg-gray-700 hover:bg-gray-600 shadow-lg shadow-gray-900/20"
           }`}
           aria-label={isRecording ? "Stop conversation" : "Start conversation"}
         >
           {isRecording ? (
-            <MicOff className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+            <MicOff className="h-6 w-6 sm:h-8 sm:w-8 text-[#4299E1]" />
           ) : (
             <Mic className="h-6 w-6 sm:h-8 sm:w-8 text-gray-300" />
           )}
