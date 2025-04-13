@@ -11,6 +11,22 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Funnel Sans';
+  src: url('/fonts/funnel-sans/FunnelSans-VariableFont_wght.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Funnel Sans';
+  src: url('/fonts/funnel-sans/FunnelSans-Italic-VariableFont_wght.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --background: 240 10% 3.9%;
@@ -82,7 +98,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Funnel Sans', sans-serif;
   }
   
   h1.humming-title {

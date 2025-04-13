@@ -80,21 +80,27 @@ const simulateLogMessages = (setLogs: React.Dispatch<React.SetStateAction<LogMes
   ];
 
   let index = 0;
-  const interval = setInterval(() => {
+  const sendNextMessage = () => {
     if (index < messages.length) {
       const logMessage: LogMessage = {
         timestamp: new Date().toISOString(),
-        level: "info",
+        level: "INFO",
         message: messages[index]
       };
       setLogs(prevLogs => [...prevLogs, logMessage]);
       index++;
-    } else {
-      clearInterval(interval);
+      
+      const nextInterval = Math.floor(Math.random() * 8000) + 2000;
+      setTimeout(sendNextMessage, nextInterval);
     }
-  }, 4000); // Increased delay to 4 seconds between messages
+  };
 
-  return () => clearInterval(interval);
+  // Start the sequence
+  sendNextMessage();
+
+  return () => {
+    // Cleanup function
+  };
 };
 
 export function useWebSocket(sessionId: string) {
