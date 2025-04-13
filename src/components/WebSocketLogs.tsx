@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
 import AnimationBlob from "./AnimationBlob";
@@ -35,7 +34,7 @@ const WebSocketLogs: React.FC<WebSocketLogsProps> = ({
   }
 
   return (
-    <div className="flex flex-col items-center w-full max-w-md mx-auto p-4">
+    <div className="flex flex-col items-center w-full max-w-md mx-auto p-4 relative">
       <Collapsible
         open={isOpen}
         onOpenChange={setIsOpen}
@@ -87,12 +86,16 @@ const WebSocketLogs: React.FC<WebSocketLogsProps> = ({
         </CollapsibleContent>
       </Collapsible>
       
-      {/* Premium Listing */}
-      <PremiumListing
-        name="Portia AI"
-        description="Build multi-agent, stateful, authenticated workflows. Use Portia to guide your LLM's reasoning and deploy agents with managed access permissions."
-        logoUrl="/lovable-uploads/c8f1ef40-75ba-4e89-b53a-b4822e8e0b7d.png"
-      />
+      {/* Premium Listing - Fixed at bottom */}
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-800 z-50">
+        <div className="max-w-md mx-auto p-4">
+          <PremiumListing
+            name="Portia AI"
+            description="Build multi-agent, stateful, authenticated workflows. Use Portia to guide your LLM's reasoning and deploy agents with managed access permissions."
+            logoUrl="/lovable-uploads/c8f1ef40-75ba-4e89-b53a-b4822e8e0b7d.png"
+          />
+        </div>
+      </div>
     </div>
   );
 };
