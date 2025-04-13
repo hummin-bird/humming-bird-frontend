@@ -10,6 +10,11 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
+  preview: {
+    host: "::",
+    port: 8080,
+    allowedHosts: ["humming-bird-frontend-production.up.railway.app"],
+  },
   plugins: [
     react(),
     mode === 'development' &&
