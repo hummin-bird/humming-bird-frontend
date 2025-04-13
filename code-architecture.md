@@ -19,6 +19,7 @@ This project is a web application built with React and TypeScript that enables v
 ## Interface Structure
 
 ### Main Components
+<img width="1088" alt="Screenshot 2025-04-13 at 9 28 14 AM" src="https://github.com/user-attachments/assets/0b60403a-3acc-41e9-9912-dd891cf57057" />
 
 - `VoiceRecorder`: Controls the voice input functionality
 - `AudioWaveform`: Visualizes audio input
