@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useIsMobile } from "../hooks/use-mobile";
@@ -48,8 +47,8 @@ const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
             </CollapsibleTrigger>
           </div>
 
-          <CollapsibleContent className="transition-all duration-300 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-            <div className="relative">
+          <div className="relative">
+            <CollapsibleContent className="transition-all duration-500 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
               <div
                 ref={containerRef}
                 className="conversation-container rounded-lg p-3 sm:p-4 w-full max-h-80 sm:max-h-96 overflow-y-auto flex flex-col gap-2"
@@ -98,9 +97,21 @@ const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
                   })}
                 </TransitionGroup>
               </div>
-              <div className="conversation-fade-edge"></div>
+            </CollapsibleContent>
+
+            {/* Collapsed state */}
+            <div 
+              className="collapsed-state"
+              data-state={isOpen ? "open" : "closed"}
+              onClick={() => !isOpen && setIsOpen(true)}
+            >
+              <div className="conversation-container rounded-lg p-3 sm:p-4 w-full h-full flex items-center justify-center">
+                <div className="text-center text-gray-500">
+                </div>
+              </div>
             </div>
-          </CollapsibleContent>
+            <div className="conversation-fade-edge"></div>
+          </div>
         </Collapsible>
       ) : (
         <div className="relative">

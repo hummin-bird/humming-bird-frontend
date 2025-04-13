@@ -15,7 +15,7 @@ const PremiumListing: React.FC<PremiumListingProps> = ({
 }) => {
   return (
     <div className="w-full max-w-md mx-auto mt-4">
-      <Card className="bg-hummingbird-dark/30 border-none shadow-lg overflow-hidden">
+      <Card className="bg-hummingbird-dark/30 gradient-border rounded-lg shadow-lg overflow-hidden">
         <CardContent className="p-0">
           <div className="flex flex-col sm:flex-row items-center gap-4 p-4">
             <div className="flex-shrink-0 bg-white p-2 rounded-md w-16 h-16 flex items-center justify-center">

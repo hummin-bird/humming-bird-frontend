@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -147,11 +146,12 @@
 /* Conversation Styles */
 .conversation-container {
   position: relative;
-  transition: all 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   background-color: #1A1F2C;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   width: 100%;
   max-width: 100%;
+  transform-origin: top;
 }
 
 .conversation-fade-edge {
@@ -194,10 +194,14 @@
   from {
     height: 0;
     opacity: 0;
+    transform: scaleY(0);
+    transform-origin: top;
   }
   to {
     height: var(--radix-accordion-content-height);
     opacity: 1;
+    transform: scaleY(1);
+    transform-origin: top;
   }
 }
 
@@ -205,19 +209,55 @@
   from {
     height: var(--radix-accordion-content-height);
     opacity: 1;
+    transform: scaleY(1);
+    transform-origin: top;
   }
   to {
     height: 0;
     opacity: 0;
+    transform: scaleY(0);
+    transform-origin: top;
   }
 }
 
 .animate-accordion-down {
-  animation: accordion-down 0.3s ease-out;
+  animation: accordion-down 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .animate-accordion-up {
-  animation: accordion-up 0.3s ease-out;
+  animation: accordion-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Conversation container transitions */
+[data-state="closed"] .conversation-container {
+  transform: scaleY(0.1);
+  opacity: 0;
+  pointer-events: none;
+}
+
+[data-state="open"] .conversation-container {
+  transform: scaleY(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Collapsed state */
+.collapsed-state {
+  position: absolute;
+  inset: 0;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.collapsed-state[data-state="closed"] {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.collapsed-state[data-state="open"] {
+  pointer-events: none;
+  opacity: 0;
 }
 
 /* Mobile Responsive Design */
