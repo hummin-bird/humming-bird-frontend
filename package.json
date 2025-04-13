@@ -8,8 +8,8 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview --port $PORT",
-    "start": "vite preview --port $PORT"
+    "preview": "vite preview",
+    "start": "vite preview"
   },
   "dependencies": {
     "@11labs/react": "^0.1.2",
