@@ -60,7 +60,19 @@ cd humming-bird-backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python main.py
+```
+
+Set the env variables in the `.env` file (create it first!):
+```
+GEMINI_API_KEY=your_gemini_api_key
+PORTIA_API_KEY=your_portia_api_key
+OPENAI_API_KEY=your_openai_api_key
+TAVILY_API_KEY=your_tavily_api_key
+```
+
+Run the backend:
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 #### Frontend
@@ -69,6 +81,14 @@ python main.py
 cd humming-bird-frontend
 brew install pnpm
 pnpm install
+```
+
+Set the env variables in the `.env` file (create it first!):
+```
+VITE_AGENT_ID=your_vite_agent_id
+```
+Run the frontend:
+```bash
 pnpm run dev
 ```
 
