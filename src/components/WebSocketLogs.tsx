@@ -1,6 +1,8 @@
+
 import React, { useEffect, useRef } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
 import AnimationBlob from "./AnimationBlob";
+import PremiumListing from "./PremiumListing";
 
 interface WebSocketLogsProps {
   sessionId: string;
@@ -27,7 +29,7 @@ const WebSocketLogs: React.FC<WebSocketLogsProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full max-w-md mx-auto p-4">
-      <div className="w-full bg-gray-800 rounded-md p-4 max-h-60 overflow-y-auto">
+      <div className="w-full bg-gray-800 rounded-md p-4 max-h-60 overflow-y-auto mb-4">
         <h3 className="text-white font-medium mb-2">Real-time Logs</h3>
         {logs.length === 0 ? (
           <p className="text-gray-400 text-sm italic">Waiting for logs...</p>
@@ -59,6 +61,13 @@ const WebSocketLogs: React.FC<WebSocketLogsProps> = ({
         )}
         <div ref={logsEndRef} />
       </div>
+      
+      {/* Premium Listing */}
+      <PremiumListing
+        name="Portia AI"
+        description="Build multi-agent, stateful, authenticated workflows. Use Portia to guide your LLM's reasoning and deploy agents with managed access permissions."
+        logoUrl="/lovable-uploads/c8f1ef40-75ba-4e89-b53a-b4822e8e0b7d.png"
+      />
     </div>
   );
 };
