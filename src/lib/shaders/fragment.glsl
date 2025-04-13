@@ -3,6 +3,7 @@ varying vec2 v_texcoord;
 uniform vec2 u_mouse;
 uniform vec2 u_resolution;
 uniform float u_pixelRatio;
+uniform float u_isRecording; // 1.0 when recording, 0.0 when not recording
 
 /* common constants */
 #ifndef PI
@@ -82,9 +83,27 @@ void main() {
     float roundness = 0.4;
     float borderSize = 0.05;
     
+    /* Get distance to mouse position for glow effect */
+    float distToMouse = length(st - posMouse);
+    
+    // Creating a lens effect with colors instead of transparency
+    float lensSize = u_isRecording > 0.5 ? 0.15 : 0.2; // Size of the lens area
+    float lensEdge = u_isRecording > 0.5 ? 0.05 : 0.08; // Sharper edge for better defined lens
+    
+    // Create a clean lens effect with smooth edges (inverted from previous - now 1.0 inside the lens)
+    float lensEffect = 1.0 - smoothstep(lensSize - lensEdge, lensSize + lensEdge, distToMouse);
+    
+    // Create a subtle blur/glow around the lens edge (same as before)
+    float edgeGlow = smoothstep(lensSize - lensEdge*3.0, lensSize + lensEdge, distToMouse) * 
+                    (1.0 - smoothstep(lensSize - lensEdge, lensSize + lensEdge*3.0, distToMouse));
+    edgeGlow *= 1.5; // Intensify the edge glow
+    
+    // Apply blur parameters
+    float glowIntensity = smoothstep(0.3, 0.0, distToMouse) * 2.0;
+    
     /* sdf Circle params */
-    float circleSize = 0.3;
-    float circleEdge = 0.5;
+    float circleSize = u_isRecording > 0.5 ? 0.15 : 0.25; 
+    float circleEdge = u_isRecording > 0.5 ? 0.3 : 0.4;
     
     /* sdf Circle */
     float sdfCircle = fill(
@@ -93,37 +112,63 @@ void main() {
         circleEdge
     );
     
-    float sdf;
-    if (VAR == 0) {
-        /* sdf round rectangle with stroke param adjusted by sdf circle */
-        sdf = sdRoundRect(st, vec2(size), roundness);
-        sdf = stroke(sdf, 0.0, borderSize, sdfCircle) * 4.0;
-    } else if (VAR == 1) {
-        /* sdf circle with fill param adjusted by sdf circle */
-        sdf = sdCircle(st, vec2(0.5));
-        sdf = fill(sdf, 0.6, sdfCircle) * 1.2;
-    } else if (VAR == 2) {
-        /* sdf circle with stroke param adjusted by sdf circle */
-        sdf = sdCircle(st, vec2(0.5));
-        sdf = stroke(sdf, 0.58, 0.02, sdfCircle) * 4.0;
-    } else if (VAR == 3) {
-        /* sdf circle with fill param adjusted by sdf circle */
-        sdf = sdPoly(st - vec2(0.5, 0.45), 0.3, 3);
-        sdf = fill(sdf, 0.05, sdfCircle) * 1.4;
-    }
+    // Create a circular border instead of a rectangle
+    float circleRadius = 0.47; // Increased from 0.45 to make the circle larger
+    float sdf = sdCircle(st, vec2(0.5)) - circleRadius; // Main circle with larger radius
+    float baseSdf = stroke(sdf, 0.0, borderSize, 0.15) * 4.0; // Base stroke with fixed thickness
+    float glowingSdf = stroke(sdf, 0.0, borderSize, sdfCircle) * 4.0; // Stroke with mouse-based adjustment
     
-    // Default color (white/gray)
-    vec3 color = vec3(sdf);
+    // Create a combined effect with the base shape and the highlight
+    sdf = max(baseSdf, glowingSdf * 1.2);
     
-    // Apply gradient colors to lines
+    // Apply gradient colors 
     vec3 blueColor = vec3(0.157, 0.706, 0.960); // #28b4f5
     vec3 greenColor = vec3(0.012, 1.0, 0.396);  // #03ff65
     
-    // For VAR=0 (rounded rectangle with stroke)
-    // Apply horizontal gradient along the lines
-    color = mix(blueColor, greenColor, st.x) * sdf;
+    // Calculate angle for circular gradient
+    vec2 toCenter = st - vec2(0.5);
+    float angle = atan(toCenter.y, toCenter.x) / (2.0 * PI) + 0.5; // Normalize to 0-1
     
-    // Set alpha based on sdf value to make background transparent
-    float alpha = sdf;
-    gl_FragColor = vec4(color.rgb, alpha);
+    // Get gradient color based on circular position around the border
+    vec3 gradientColor = mix(greenColor, blueColor, angle);
+    
+    // Apply the gradient directly to the base stroke with increased intensity
+    vec3 baseColor = gradientColor * baseSdf * 1.5; // Increased intensity to make colors more vibrant
+    
+    // Create a more subtle glow effect that doesn't wash out the gradient
+    vec3 hazeColor = mix(gradientColor, vec3(1.0), 0.3); // Only 30% white, 70% gradient color
+    
+    // Apply the haze with reduced white intensity
+    vec3 glowColor = hazeColor * (1.0 + glowIntensity * 1.8) * glowingSdf;
+    
+    // Create softer blending between base and glow
+    vec3 color = mix(baseColor, glowColor, glowingSdf * 0.8);
+    
+    // Add edge glow to the color - creates a bright rim around the lens
+    vec3 edgeColor = hazeColor * 2.0; // Brighter edge color
+    color = mix(color, edgeColor, edgeGlow);
+    
+    // Create a blue-green gradient for the lens interior with dynamic effects
+    // Add some time-based animation using the angle (which changes as the glow point moves)
+    float animatedFactor = 0.5 + sin(angle * 8.0) * 0.5; // Creates a cycling effect as the point moves
+    
+    // Create a more vibrant, shimmering lens color
+    vec3 lensColor = mix(greenColor * 1.5, blueColor * 1.5, animatedFactor); // Brighter, animated blue-green gradient
+    
+    // Add a "glow core" - a bright inner part of the lens
+    float innerCore = smoothstep(lensSize * 0.4, 0.0, distToMouse);
+    lensColor = mix(lensColor, vec3(1.0, 1.0, 1.0), innerCore * 0.7); // White core
+    
+    // Apply lens color where lensEffect is active, stronger effect
+    color = mix(color, lensColor, lensEffect);
+    
+    // Calculate the base alpha
+    float hazeAlpha = glowingSdf * 0.9; // Semi-transparent haze
+    float baseAlpha = baseSdf; // Original alpha for the base shape
+    float alpha = max(baseAlpha, hazeAlpha);
+    
+    // Keep everything visible, no transparency in the lens
+    float finalAlpha = alpha; // No transparency effect, keep base alpha
+    
+    gl_FragColor = vec4(color, finalAlpha);
 }

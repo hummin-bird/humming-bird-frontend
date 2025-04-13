@@ -142,7 +142,7 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ isRecording }) => {
 
         // Create a smooth pattern with varying speed
         const baseSpeed = 0.4;
-        const recordingSpeedMultiplier = 2.5; // Faster animation when recording
+        const recordingSpeedMultiplier = 8.0; // Increased from 5.0 to 8.0 for faster movement
 
         const animationSpeed = isRecording
           ? baseSpeed * recordingSpeedMultiplier // Increased speed when recording
@@ -151,19 +151,39 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ isRecording }) => {
         autoMoveRef.current.angle += dt * animationSpeed;
         const angle = autoMoveRef.current.angle;
 
-        // Add some variation with sine waves for more organic movement
-        const radiusVariation = Math.sin(angle * 0.5) * 0.1 + 0.9;
-
         if (isRecording) {
-          // Original circle pattern for recording
-          mouseRef.current.x = centerX + Math.cos(angle) * radius;
-          mouseRef.current.y = centerY + Math.sin(angle) * radius;
+          // When recording, move the point along an elliptical path inside the circle
+          // Calculate position to stay close to the inner edge of the circle
+
+          // Create an extremely elongated elliptical path that goes far beyond the circle's edges
+          const horizontalRadius = radius * 1.8; // Horizontal radius extends 80% beyond the circle
+          const verticalRadius = radius * 0.25; // Very narrow vertical radius (25% of the circle radius)
+
+          // Add multiple overlapping variations for more organic movement
+          const primaryPulse = 1.0 + Math.sin(angle * 0.2) * 0.08; // Slow, larger pulse
+          const secondaryPulse = 1.0 + Math.sin(angle * 0.7) * 0.03; // Faster, smaller pulse
+          const pulseFactor = primaryPulse * secondaryPulse;
+
+          // Add a slight wobble to the vertical component
+          const verticalWobble = 1.0 + Math.sin(angle * 3.0) * 0.15;
+
+          // Create extremely elongated elliptical motion with variations
+          const ellipticalX = Math.cos(angle) * horizontalRadius * pulseFactor;
+          const ellipticalY = Math.sin(angle) * verticalRadius * verticalWobble;
+
+          // Calculate the position that follows the inner edge of the circle
+          mouseRef.current.x = centerX + ellipticalX;
+          mouseRef.current.y = centerY + ellipticalY;
         } else {
-          // Modified pattern for non-recording
+          // For non-recording state
+          // Add some variation with sine waves for more organic movement
+          const nonRecordingVariation = Math.sin(angle * 0.5) * 0.1 + 0.9;
+
+          // Modified pattern for non-recording - stays closer to center
           mouseRef.current.x =
-            centerX + Math.cos(angle) * radius * radiusVariation;
+            centerX + Math.cos(angle) * radius * nonRecordingVariation;
           mouseRef.current.y =
-            centerY + Math.sin(angle * 1.3) * radius * radiusVariation;
+            centerY + Math.sin(angle * 1.3) * radius * nonRecordingVariation;
         }
       }
 
