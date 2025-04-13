@@ -1,10 +1,8 @@
-
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff } from "lucide-react";
-import { useConversation } from "@11labs/react";
 import { useGlobalContext } from "@/hooks/useGlobalContext";
-import { v4 as uuidv4 } from "uuid";
+import { useWelcomeMessage } from "@/hooks/useWelcomeMessage";
 
 interface VoiceRecorderProps {
   isRecording: boolean;
@@ -19,54 +17,20 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   onConversationEnd,
   onConversationStart,
 }) => {
-  const { addMessage, setConversationId } = useGlobalContext();
+  const { addMessage } = useGlobalContext();
+  const welcomeMessage = useWelcomeMessage();
 
-  const onMessage = (event) => {
-    console.log("event :", event);
-    addMessage({
-      id: uuidv4(),
-      text: event.message,
-      sender: event.source,
-    });
-  };
-
-  const onConnect = (event) => {
-    console.log("Connected to ElevenLabs", event);
-    setConversationId(event.conversationId);
-    onConversationStart();
-  };
-
-  // ElevenLabs conversation setup
-  const conversation = useConversation({
-    onConnect: onConnect,
-    onDisconnect: (event) => {
-      console.log("Disconnected from ElevenLabs", event);
+  const toggleConversation = () => {
+    if (isRecording) {
+      // Stop recording
       setIsRecording(false);
       onConversationEnd();
-    },
-    onMessage,
-    onError: (error) => {
-      setIsRecording(false);
-      console.error("Error with ElevenLabs:", error);
-    },
-  });
-
-  const toggleConversation = useCallback(async () => {
-    if (conversation.status === "connected" || isRecording) {
-      await conversation.endSession();
-      setIsRecording(false);
     } else {
-      try {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
-        await conversation.startSession({
-          agentId: import.meta.env.VITE_AGENT_ID,
-        });
-        setIsRecording(true);
-      } catch (error) {
-        console.error("Failed to start conversation:", error);
-      }
+      // Start recording
+      setIsRecording(true);
+      onConversationStart();
     }
-  }, [conversation, isRecording, setIsRecording]);
+  };
 
   return (
     <div className="flex flex-col items-center gap-4 w-full px-4">
@@ -95,7 +59,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       <div className="w-full max-w-lg text-center min-h-16 px-2">
         {!isRecording && (
           <p className="text-gray-500 italic text-sm sm:text-base">
-            Tell me what you're building — I'll fetch the perfect tools.
+            {welcomeMessage}
           </p>
         )}
         {isRecording && (
