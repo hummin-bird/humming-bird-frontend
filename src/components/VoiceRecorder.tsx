@@ -78,7 +78,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
         <Button
           className={`h-14 w-14 sm:h-16 sm:w-16 rounded-full ${
             isRecording
-              ? "bg-white bg-[radial-gradient(circle_at_center,_rgba(66,153,225,0.1)_0%,_rgba(66,153,225,0.2)_100%)] text-white"
+              ? "bg-white/90 bg-[radial-gradient(circle_at_center,_rgba(66,153,225,0.2)_0%,_rgba(66,153,225,0.3)_100%)] text-blue-500"
               : "bg-gray-700 hover:bg-gray-600 shadow-lg shadow-gray-900/20"
           }`}
           aria-label={isRecording ? "Stop conversation" : "Start conversation"}
