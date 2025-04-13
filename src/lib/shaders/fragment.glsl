@@ -4,6 +4,7 @@ uniform vec2 u_mouse;
 uniform vec2 u_resolution;
 uniform float u_pixelRatio;
 uniform float u_isRecording; // 1.0 when recording, 0.0 when not recording
+uniform float u_audioLevel; // New: Audio level from microphone (0.0-1.0)
 
 /* common constants */
 #ifndef PI
@@ -87,23 +88,26 @@ void main() {
     float distToMouse = length(st - posMouse);
     
     // Creating a lens effect with colors instead of transparency
-    float lensSize = u_isRecording > 0.5 ? 0.15 : 0.2; // Size of the lens area
-    float lensEdge = u_isRecording > 0.5 ? 0.05 : 0.08; // Sharper edge for better defined lens
+    // Adjust lens size based on audio level when recording
+    float audioFactor = 1.0 + (u_audioLevel * 2.0); // Scale up with audio level
+    float lensSize = u_isRecording > 0.5 ? 0.15 * audioFactor : 0.2; 
+    float lensEdge = u_isRecording > 0.5 ? 0.05 * audioFactor : 0.08; 
     
     // Create a clean lens effect with smooth edges (inverted from previous - now 1.0 inside the lens)
     float lensEffect = 1.0 - smoothstep(lensSize - lensEdge, lensSize + lensEdge, distToMouse);
     
-    // Create a subtle blur/glow around the lens edge (same as before)
+    // Create a subtle blur/glow around the lens edge with audio reactivity
+    float edgeGlowIntensity = u_isRecording > 0.5 ? 1.5 + (u_audioLevel * 3.0) : 1.5;
     float edgeGlow = smoothstep(lensSize - lensEdge*3.0, lensSize + lensEdge, distToMouse) * 
                     (1.0 - smoothstep(lensSize - lensEdge, lensSize + lensEdge*3.0, distToMouse));
-    edgeGlow *= 1.5; // Intensify the edge glow
+    edgeGlow *= edgeGlowIntensity; // Audio-reactive intensity for the edge glow
     
-    // Apply blur parameters
-    float glowIntensity = smoothstep(0.3, 0.0, distToMouse) * 2.0;
+    // Apply blur parameters with audio reactive intensity
+    float glowIntensity = smoothstep(0.3, 0.0, distToMouse) * (2.0 + (u_audioLevel * 3.0));
     
-    /* sdf Circle params */
-    float circleSize = u_isRecording > 0.5 ? 0.15 : 0.25; 
-    float circleEdge = u_isRecording > 0.5 ? 0.3 : 0.4;
+    /* sdf Circle params - make circle size and edge audio-reactive */
+    float circleSize = u_isRecording > 0.5 ? 0.15 * (1.0 + u_audioLevel) : 0.25; 
+    float circleEdge = u_isRecording > 0.5 ? 0.3 * (1.0 + u_audioLevel * 0.5) : 0.4;
     
     /* sdf Circle */
     float sdfCircle = fill(
@@ -125,38 +129,52 @@ void main() {
     vec3 blueColor = vec3(0.157, 0.706, 0.960); // #28b4f5
     vec3 greenColor = vec3(0.012, 1.0, 0.396);  // #03ff65
     
-    // Calculate angle for circular gradient
+    // Calculate angle for circular gradient with audio reactivity when recording
     vec2 toCenter = st - vec2(0.5);
     float angle = atan(toCenter.y, toCenter.x) / (2.0 * PI) + 0.5; // Normalize to 0-1
+    
+    // Audio-reactive color shift for recording state
+    if (u_isRecording > 0.5) {
+        // Add audio-reactive color shift
+        angle = fract(angle + u_audioLevel * 0.3); // Shift colors based on audio level
+    }
     
     // Get gradient color based on circular position around the border
     vec3 gradientColor = mix(greenColor, blueColor, angle);
     
     // Apply the gradient directly to the base stroke with increased intensity
-    vec3 baseColor = gradientColor * baseSdf * 1.5; // Increased intensity to make colors more vibrant
+    float baseIntensity = 1.5 + (u_isRecording > 0.5 ? u_audioLevel * 1.5 : 0.0);
+    vec3 baseColor = gradientColor * baseSdf * baseIntensity;
     
     // Create a more subtle glow effect that doesn't wash out the gradient
     vec3 hazeColor = mix(gradientColor, vec3(1.0), 0.3); // Only 30% white, 70% gradient color
     
-    // Apply the haze with reduced white intensity
-    vec3 glowColor = hazeColor * (1.0 + glowIntensity * 1.8) * glowingSdf;
+    // Apply the haze with audio-reactive intensity
+    float glowMultiplier = 1.8 + (u_isRecording > 0.5 ? u_audioLevel * 4.0 : 0.0);
+    vec3 glowColor = hazeColor * (1.0 + glowIntensity * glowMultiplier) * glowingSdf;
     
     // Create softer blending between base and glow
     vec3 color = mix(baseColor, glowColor, glowingSdf * 0.8);
     
-    // Add edge glow to the color - creates a bright rim around the lens
-    vec3 edgeColor = hazeColor * 2.0; // Brighter edge color
+    // Add edge glow to the color with audio reactivity
+    vec3 edgeColor = hazeColor * (2.0 + (u_isRecording > 0.5 ? u_audioLevel * 3.0 : 0.0)); 
     color = mix(color, edgeColor, edgeGlow);
     
     // Create a blue-green gradient for the lens interior with dynamic effects
     // Add some time-based animation using the angle (which changes as the glow point moves)
     float animatedFactor = 0.5 + sin(angle * 8.0) * 0.5; // Creates a cycling effect as the point moves
     
+    // Audio-reactive lens shimmer effect when recording
+    if (u_isRecording > 0.5) {
+        animatedFactor = 0.5 + sin(angle * (8.0 + u_audioLevel * 15.0)) * 0.5;
+    }
+    
     // Create a more vibrant, shimmering lens color
     vec3 lensColor = mix(greenColor * 1.5, blueColor * 1.5, animatedFactor); // Brighter, animated blue-green gradient
     
-    // Add a "glow core" - a bright inner part of the lens
-    float innerCore = smoothstep(lensSize * 0.4, 0.0, distToMouse);
+    // Add a "glow core" - a bright inner part of the lens - make it audio-reactive
+    float innerCoreSize = u_isRecording > 0.5 ? 0.4 + (u_audioLevel * 0.4) : 0.4;
+    float innerCore = smoothstep(lensSize * innerCoreSize, 0.0, distToMouse);
     lensColor = mix(lensColor, vec3(1.0, 1.0, 1.0), innerCore * 0.7); // White core
     
     // Apply lens color where lensEffect is active, stronger effect

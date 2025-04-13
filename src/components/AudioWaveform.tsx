@@ -6,6 +6,11 @@ interface AudioWaveformProps {
   isRecording: boolean;
 }
 
+// Add type definition for the WebAudio API
+interface Window {
+  webkitAudioContext: typeof AudioContext;
+}
+
 const AudioWaveform: React.FC<AudioWaveformProps> = ({ isRecording }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -22,7 +27,65 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ isRecording }) => {
   // Add automated mouse movement simulation when recording
   const autoMoveRef = useRef({ active: true, angle: 0 });
 
+  // Audio refs
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const audioDataRef = useRef<Uint8Array | null>(null);
+
   const [variation, setVariation] = useState(0);
+  const [audioLevel, setAudioLevel] = useState(0);
+
+  // Initialize audio context and analyzer
+  useEffect(() => {
+    if (isRecording) {
+      // Create audio context and analyzer if they don't exist
+      if (!audioContextRef.current) {
+        // Safely create AudioContext with cross-browser support
+        audioContextRef.current = new (window.AudioContext ||
+          (window as any).webkitAudioContext)();
+
+        analyserRef.current = audioContextRef.current.createAnalyser();
+        analyserRef.current.fftSize = 256;
+        audioDataRef.current = new Uint8Array(
+          analyserRef.current.frequencyBinCount
+        );
+      }
+
+      // Get user microphone
+      navigator.mediaDevices
+        .getUserMedia({ audio: true, video: false })
+        .then((stream) => {
+          mediaStreamRef.current = stream;
+
+          if (audioContextRef.current && analyserRef.current) {
+            const source =
+              audioContextRef.current.createMediaStreamSource(stream);
+            source.connect(analyserRef.current);
+          }
+        })
+        .catch((err) => {
+          console.error("Error accessing microphone:", err);
+        });
+    } else {
+      // Cleanup when not recording
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+        mediaStreamRef.current = null;
+      }
+    }
+
+    return () => {
+      // Cleanup audio resources
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
+    };
+  }, [isRecording]);
 
   useEffect(() => {
     // No longer changing variation based on recording state
@@ -103,6 +166,8 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ isRecording }) => {
         u_mouse: { value: mouseDampRef.current },
         u_resolution: { value: resolutionRef.current },
         u_pixelRatio: { value: window.devicePixelRatio },
+        u_isRecording: { value: 0.0 },
+        u_audioLevel: { value: 0.0 },
       },
       defines: {
         VAR: variation.toString(),
@@ -128,6 +193,17 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ isRecording }) => {
       lastTimeRef.current = currentTime;
       timeRef.current = currentTime;
 
+      // Get audio data if recording
+      let audioLevel = 0;
+      if (isRecording && analyserRef.current && audioDataRef.current) {
+        analyserRef.current.getByteFrequencyData(audioDataRef.current);
+
+        // Calculate average volume level from frequency data
+        const sum = audioDataRef.current.reduce((acc, val) => acc + val, 0);
+        audioLevel = sum / audioDataRef.current.length / 255; // Normalize to 0-1
+        setAudioLevel(audioLevel);
+      }
+
       // Automated mouse movement always active
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
@@ -142,32 +218,39 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ isRecording }) => {
 
         // Create a smooth pattern with varying speed
         const baseSpeed = 0.4;
-        const recordingSpeedMultiplier = 8.0; // Increased from 5.0 to 8.0 for faster movement
+
+        // Use audio level to influence speed when recording
+        const recordingSpeedMultiplier = isRecording
+          ? 3.0 + audioLevel * 10.0 // Base speed + audio level influence
+          : 8.0; // Default speed when not recording
 
         const animationSpeed = isRecording
-          ? baseSpeed * recordingSpeedMultiplier // Increased speed when recording
+          ? baseSpeed * recordingSpeedMultiplier
           : baseSpeed;
 
         autoMoveRef.current.angle += dt * animationSpeed;
         const angle = autoMoveRef.current.angle;
 
         if (isRecording) {
-          // When recording, move the point along an elliptical path inside the circle
-          // Calculate position to stay close to the inner edge of the circle
+          // When recording, use audio level to influence the path
+          // Higher audio levels = more extreme movements
 
-          // Create an extremely elongated elliptical path that goes far beyond the circle's edges
-          const horizontalRadius = radius * 1.8; // Horizontal radius extends 80% beyond the circle
-          const verticalRadius = radius * 0.25; // Very narrow vertical radius (25% of the circle radius)
+          // Base elliptical parameters
+          const horizontalRadius = radius * (1.4 + audioLevel * 1.0); // Expands with audio level
+          const verticalRadius = radius * (0.25 + audioLevel * 0.3); // Expands with audio level
 
           // Add multiple overlapping variations for more organic movement
-          const primaryPulse = 1.0 + Math.sin(angle * 0.2) * 0.08; // Slow, larger pulse
-          const secondaryPulse = 1.0 + Math.sin(angle * 0.7) * 0.03; // Faster, smaller pulse
+          const primaryPulse =
+            1.0 + Math.sin(angle * 0.2) * 0.08 * (1 + audioLevel);
+          const secondaryPulse =
+            1.0 + Math.sin(angle * 0.7) * 0.03 * (1 + audioLevel);
           const pulseFactor = primaryPulse * secondaryPulse;
 
-          // Add a slight wobble to the vertical component
-          const verticalWobble = 1.0 + Math.sin(angle * 3.0) * 0.15;
+          // Add audio-reactive wobble to the vertical component
+          const verticalWobble =
+            1.0 + Math.sin(angle * 3.0) * 0.15 * (1 + audioLevel * 2);
 
-          // Create extremely elongated elliptical motion with variations
+          // Create audio-reactive elliptical motion
           const ellipticalX = Math.cos(angle) * horizontalRadius * pulseFactor;
           const ellipticalY = Math.sin(angle) * verticalRadius * verticalWobble;
 
@@ -201,6 +284,17 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ isRecording }) => {
         8,
         dt
       );
+
+      // Update shader uniforms
+      if (
+        quadRef.current &&
+        quadRef.current.material instanceof THREE.ShaderMaterial
+      ) {
+        quadRef.current.material.uniforms.u_isRecording.value = isRecording
+          ? 1.0
+          : 0.0;
+        quadRef.current.material.uniforms.u_audioLevel.value = audioLevel;
+      }
 
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
         rendererRef.current.render(sceneRef.current, cameraRef.current);
