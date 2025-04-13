@@ -1,4 +1,5 @@
 # Encode AI Hackathon 2025 - Humming Bird
+<img width="1159" alt="Screenshot 2025-04-13 at 10 07 59 AM" src="https://github.com/user-attachments/assets/007858c2-85cc-4f0d-a366-d3f9c57e5470" />
 
 ## 🏆 About the Hackathon
 
