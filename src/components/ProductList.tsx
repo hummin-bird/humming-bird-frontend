@@ -31,11 +31,13 @@ const ProductList: React.FC<Props> = ({ products }) => {
             className="flex gap-3 p-3 bg-hummingbird-dark rounded-md hover:bg-hummingbird-dark/70 transition-colors"
           >
             <div className="flex-shrink-0">
-              <img
-                src={product.image_url}
-                alt={product.name}
-                className="w-16 h-16 rounded-md object-cover"
-              />
+              <div className="w-16 h-16 rounded-md overflow-hidden">
+                <img
+                  src={product.image_url}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
             <div className="flex flex-col flex-1">
               <h3 className="font-bold text-hummingbird-primary">
