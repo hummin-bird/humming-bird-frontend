@@ -74,9 +74,14 @@ const Index = () => {
       <div className="min-h-screen flex flex-col items-center justify-between p-3 sm:p-6 bg-gradient-to-b from-hummingbird-light to-hummingbird-background">
         <div className="w-full max-w-4xl flex flex-col items-center gap-6 sm:gap-8 py-6">
           {/* Header */}
-          <h1 className="humming-title text-3xl sm:text-4xl md:text-5xl font-bold text-hummingbird-primary">
-            HUMMINGBIRD
-          </h1>
+          <button 
+            onClick={() => window.location.reload()}
+            className="hover:opacity-80 transition-opacity"
+          >
+            <h1 className="humming-title text-3xl sm:text-4xl md:text-5xl font-bold text-hummingbird-primary">
+              HUMMINGBIRD
+            </h1>
+          </button>
 
           {/* Only show product list if we have products and showProductList is true */}
           {showProductList && <ProductList products={productList} />}
