@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => ({
   },
   preview: {
     host: "::",
-    port: 8080,
+    port: Number(process.env.PORT) || 4173,
     allowedHosts: ["humming-bird-frontend-production.up.railway.app"],
   },
   plugins: [
