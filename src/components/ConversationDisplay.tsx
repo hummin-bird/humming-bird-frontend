@@ -30,7 +30,7 @@ const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   }, [messages, isOpen]);
 
   return (
-    <div className="w-full max-w-lg mx-auto">
+    <div className="w-full max-w-2xl mx-auto">
       {hasMessages ? (
         <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
           <div className="flex items-center justify-end mb-2">
